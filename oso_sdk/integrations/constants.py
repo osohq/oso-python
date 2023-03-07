@@ -1,0 +1,1 @@
+RESOURCE_ID_DEFAULT = "_"

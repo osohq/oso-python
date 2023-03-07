@@ -1,2 +1,2 @@
 # oso-python
-The official Python client for Oso
+The official Python integrations for Oso
