@@ -20,6 +20,7 @@ if TYPE_CHECKING:
             api_key: str,
             integration: IntegrationConfig,
             shared: bool = True,
+            exception: Exception | None = None,
         ):
             pass
 
@@ -29,19 +30,21 @@ if TYPE_CHECKING:
 
 else:
     # Alias `init and `oso` for actual usage.
-    def init(url, api_key, integration, shared: bool = True):
+    def init(url, api_key, integration, shared: bool = True, exception: Exception | None = None):
         if shared:
             global _shared
             if _shared is not None:
-                raise
-            _shared = type(integration).init(url, api_key)
+                raise RuntimeError(
+                    "`oso_sdk.init` cannot be called multiple times when shared=True"
+                )
+            _shared = type(integration).init(url, api_key, exception)
             return _shared
         else:
-            return type(integration).init(url, api_key)
+            return type(integration).init(url, api_key, exception)
 
     def oso():
         if _shared is None:
-            raise
+            raise RuntimeError("`oso_sdk.init` must first be called with shared=True")
 
         return _shared
 

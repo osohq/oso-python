@@ -23,10 +23,11 @@ def to_resource_type(resource_type: str) -> str:
 
 
 class Integration:
-    def __init__(self):
+    def __init__(self, exception: Exception | None = None):
         self.routes: Dict[str, Route] = {}
         self._identify_action_from_method: Callable[..., str] | None = None
         self._identify_user_from_request: Callable[..., str] | None = None
+        self._custom_exception: Exception | None = exception
 
     def identify_user_from_request(self, f: Callable[..., str]):
         self._identify_user_from_request = f
@@ -36,7 +37,7 @@ class Integration:
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
         raise NotImplementedError
-
+    
     def enforce(
         self,
         resource_id: str,
@@ -44,7 +45,7 @@ class Integration:
         resource_type: str | None = None,
     ):
         if len(resource_id) == 0:
-            raise
+            raise ValueError("`resource_id` cannot be an empty string")
 
         resource_id_kind, resource_id = self._parse_resource_id(resource_id)
 
@@ -67,5 +68,5 @@ class Integration:
 
 class IntegrationConfig:
     @staticmethod
-    def init(url: str, api_key: str):
+    def init(url: str, api_key: str, exception: Exception | None = None):
         raise NotImplementedError
