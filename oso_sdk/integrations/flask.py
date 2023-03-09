@@ -48,10 +48,10 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
         if r and r.resource_id:
             if r.resource_id_kind == ResourceIdKind.LITERAL:
                 resource_id = r.resource_id
-            else:
+            elif request.view_args:
                 resource_id = request.view_args[r.resource_id]
-                if not resource_id:
-                    raise
+            else:
+                raise
         else:
             resource_id = constants.RESOURCE_ID_DEFAULT
 
@@ -64,14 +64,17 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
 
     def _get_user_from_request(self) -> str:
         if self._identify_user_from_request:
-            return current_app.ensure_sync(self._identify_user_from_request)
+            foo = current_app.ensure_sync(self._identify_user_from_request)
+            return current_app.ensure_sync(self._identify_user_from_request)(request)
 
         authorization = request.headers.get("Authorization")
-        return utils.get_sub_from_jwt(authorization)
+        return utils.get_sub_from_jwt(authorization)  # type: ignore
 
     def _get_action_from_method(self) -> str:
         if self._identify_action_from_method:
-            return current_app.ensure_sync(self._identify_action_from_method)
+            return current_app.ensure_sync(self._identify_action_from_method)(
+                request.method
+            )
 
         return utils.default_get_action_from_method(request.method)
 
@@ -80,7 +83,7 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
         if not match:
             return (ResourceIdKind.LITERAL, resource_id)
         else:
-            return (ResourceIdKind.PARAM, match.groups("variable"))
+            return (ResourceIdKind.PARAM, match.group("variable"))
 
 
 def _before_request(**kwargs):

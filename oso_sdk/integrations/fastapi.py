@@ -72,7 +72,7 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
             )
 
         authorization = request.headers.get("Authorization")
-        return utils.get_sub_from_jwt(authorization)
+        return utils.get_sub_from_jwt(authorization)  # type: ignore
 
     async def _get_action_from_method(self, method: str) -> str:
         if self._identify_action_from_method:
