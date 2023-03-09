@@ -32,9 +32,11 @@ _PARAM_REGEX = re.compile(
 
 
 class _FlaskIntegration(oso_cloud.Oso, Integration):
-    def __init__(self, url: str, api_key: str, exception: Exception | None = None):
+    def __init__(
+        self, url: str, api_key: str, optin: bool, exception: Exception | None
+    ):
         oso_cloud.Oso.__init__(self, url, api_key)
-        Integration.__init__(self, exception)
+        Integration.__init__(self, optin, exception)
 
     def __call__(self):
         # Route is not declared
@@ -42,6 +44,8 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
             return
 
         r = self.routes.get(request.endpoint)
+        if self._optin and not r:
+            return
 
         try:
             user_id = self._get_user_from_request()
@@ -110,9 +114,9 @@ _oso_bp = Blueprint("oso", __name__)
 class FlaskIntegration(IntegrationConfig):
     @staticmethod
     def init(
-        url: str, api_key: str, exception: Exception | None = None
+        url: str, api_key: str, optin: bool, exception: Exception | None
     ) -> _FlaskIntegration:
-        rv = _FlaskIntegration(url, api_key, exception)
+        rv = _FlaskIntegration(url, api_key, optin, exception)
         before_request = functools.partial(_before_request, oso=rv)
         _oso_bp.before_app_request(before_request)
         current_app.register_blueprint(_oso_bp)
