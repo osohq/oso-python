@@ -24,7 +24,7 @@ _PARAM_REGEX = re.compile(
                 (?:\((?P<arguments>.*?)\))?             # converter arguments
                 \:                                      # variable delimiter
             )?
-            (?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)      # variable name
+            (?P<variable>[a-zA-Z_][a-zA-Z0-9_]*)        # variable name
         >
     """,
     re.VERBOSE,
@@ -79,17 +79,14 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
 
     def _get_user_from_request(self) -> str:
         if self._identify_user_from_request:
-            foo = current_app.ensure_sync(self._identify_user_from_request)
-            return current_app.ensure_sync(self._identify_user_from_request)(request)
+            return current_app.ensure_sync(self._identify_user_from_request)()
 
         authorization = request.headers.get("Authorization")
-        return utils.get_sub_from_jwt(authorization)  # type: ignore
+        return utils.get_sub_from_jwt(authorization)
 
     def _get_action_from_method(self) -> str:
         if self._identify_action_from_method:
-            return current_app.ensure_sync(self._identify_action_from_method)(
-                request.method
-            )
+            return current_app.ensure_sync(self._identify_action_from_method)()
 
         return utils.default_get_action_from_method(request.method)
 
@@ -112,7 +109,9 @@ _oso_bp = Blueprint("oso", __name__)
 
 class FlaskIntegration(IntegrationConfig):
     @staticmethod
-    def init(url: str, api_key: str, exception: Exception | None = None):
+    def init(
+        url: str, api_key: str, exception: Exception | None = None
+    ) -> _FlaskIntegration:
         rv = _FlaskIntegration(url, api_key, exception)
         before_request = functools.partial(_before_request, oso=rv)
         _oso_bp.before_app_request(before_request)

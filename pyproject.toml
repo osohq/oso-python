@@ -40,4 +40,3 @@ flask = ["flask>=0.11", "blinker>=1.1"]
 
 [tool.hatch.version]
 path = "oso_sdk/__init__.py"
-
