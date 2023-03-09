@@ -4,7 +4,10 @@ from oso_sdk.integrations.fastapi import FastApiIntegration
 import os
 
 oso = oso_sdk.init(
-    "https://api.osohq.com", os.environ["OSO_AUTH"], FastApiIntegration()
+    "https://api.osohq.com",
+    os.environ["OSO_AUTH"],
+    FastApiIntegration(),
+    exception=Exception(),
 )
 
 app = FastAPI(dependencies=[Depends(oso)])
@@ -15,12 +18,7 @@ def action(method: str):
     return "read"
 
 
-@oso.identify_user_from_request
-def user(request: Request):
-    return "mike"
-
-
 @app.get("/org/{id}")
-@oso.enforce("{id}", resource_type="Repo")
+@oso.enforce("{id}")
 async def org(id: int):
     return {"message": f"Org {id}"}

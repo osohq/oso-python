@@ -1,0 +1,2 @@
+class OsoSdkInternalError(Exception):
+    pass

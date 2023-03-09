@@ -1,5 +1,6 @@
 import base64
 import json
+from ..exceptions import OsoSdkInternalError
 
 
 def default_get_action_from_method(method: str):
@@ -20,11 +21,11 @@ def default_get_action_from_method(method: str):
     }
 
     if method is None:
-        raise TypeError("method cannot be None")
+        raise OsoSdkInternalError("method cannot be None")
 
     action = map.get(method.lower())
     if action is None:
-        raise ValueError(f"method {method} not supported")
+        raise OsoSdkInternalError(f"method {method} not supported")
 
     return action
 
@@ -39,12 +40,12 @@ def get_sub_from_jwt(authorization: str):
         ValueError: If the token is invalid in any way.
     """
     if authorization is None:
-        raise TypeError("authorization cannot be None")
+        raise OsoSdkInternalError("authorization cannot be None")
 
     parts = authorization.split(".")
     # JWT is composed of three parts: header, payload, signature
     if len(parts) != 3:
-        raise ValueError("JWT token is malformed")
+        raise OsoSdkInternalError("JWT token is malformed")
 
     # Pad payload before decoding; '=' is stripped because it's not URL-safe
     encoding = parts[1] + "=" * (len(parts[1]) % 4)
@@ -53,6 +54,6 @@ def get_sub_from_jwt(authorization: str):
 
     sub = data.get("sub")
     if sub is None:
-        raise ValueError("JWT payload missing `sub` field")
+        raise OsoSdkInternalError("JWT payload missing `sub` field")
 
     return sub
