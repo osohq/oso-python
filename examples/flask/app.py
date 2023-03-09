@@ -7,7 +7,10 @@ app = Flask(__name__)
 
 with app.app_context():
     oso_sdk.init(
-        "https://api.osohq.com", os.environ["OSO_AUTH"], FlaskIntegration(), exception=Exception()
+        "https://api.osohq.com",
+        os.environ["OSO_AUTH"],
+        FlaskIntegration(),
+        exception=Exception(),
     )
 
 

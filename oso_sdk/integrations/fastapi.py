@@ -42,7 +42,9 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 
         try:
             user_id = await self._get_user_from_request(request)
-            action = (r and r.action) or await self._get_action_from_method(request.method)
+            action = (r and r.action) or await self._get_action_from_method(
+                request.method
+            )
         except OsoSdkInternalError:
             self._unauthorized()
 
@@ -70,7 +72,7 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
     def _unauthorized(self):
         if self._custom_exception:
             raise self._custom_exception
-        
+
         raise HTTPException(status_code=400)
 
     async def _run(func: Callable[..., Any], *args, **kwargs):

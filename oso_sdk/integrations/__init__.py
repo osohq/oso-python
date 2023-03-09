@@ -37,7 +37,7 @@ class Integration:
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
         raise NotImplementedError
-    
+
     def enforce(
         self,
         resource_id: str,

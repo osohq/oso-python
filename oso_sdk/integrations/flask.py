@@ -48,7 +48,7 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
             action = (r and r.action) or self._get_action_from_method()
         except OsoSdkInternalError:
             self._unauthorized()
-        
+
         resource_type = (r and r.resource_type) or to_resource_type(request.endpoint)
         if r and r.resource_id:
             if r.resource_id_kind == ResourceIdKind.LITERAL:
@@ -59,7 +59,7 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
                     raise KeyError(f"`{r.resource_id} param not found")
             else:
                 raise KeyError(f"`{r.resource_id}` param not found")
-            
+
         else:
             resource_id = constants.RESOURCE_ID_DEFAULT
 
@@ -69,11 +69,11 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
             resource={"type": resource_type, "id": resource_id},
         ):
             self._unauthorized()
-    
+
     def _unauthorized(self):
         if self._custom_exception:
             raise self._custom_exception
-        
+
         else:
             abort(400)
 

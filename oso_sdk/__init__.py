@@ -30,7 +30,13 @@ if TYPE_CHECKING:
 
 else:
     # Alias `init and `oso` for actual usage.
-    def init(url, api_key, integration, shared: bool = True, exception: Exception | None = None):
+    def init(
+        url,
+        api_key,
+        integration,
+        shared: bool = True,
+        exception: Exception | None = None,
+    ):
         if shared:
             global _shared
             if _shared is not None:

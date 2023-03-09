@@ -2,6 +2,7 @@ import base64
 import json
 from ..exceptions import OsoSdkInternalError
 
+
 def default_get_action_from_method(method: str):
     """Determines CRUD action from HTTP method.
 
