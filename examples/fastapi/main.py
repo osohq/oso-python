@@ -4,7 +4,6 @@ from oso_sdk.integrations.fastapi import FastApiIntegration
 import os
 
 oso = oso_sdk.init(
-    "https://api.osohq.com",
     os.environ["OSO_AUTH"],
     FastApiIntegration(),
     exception=Exception(),

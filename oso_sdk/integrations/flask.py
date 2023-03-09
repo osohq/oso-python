@@ -5,10 +5,10 @@ from . import (
     Integration,
     IntegrationConfig,
     ResourceIdKind,
-    constants,
     utils,
     to_resource_type,
 )
+from .constants import OSO_URL, RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
 import oso_cloud
 import re
@@ -33,9 +33,9 @@ _PARAM_REGEX = re.compile(
 
 class _FlaskIntegration(oso_cloud.Oso, Integration):
     def __init__(
-        self, url: str, api_key: str, optin: bool, exception: Exception | None
+        self, api_key: str, optin: bool, exception: Exception | None
     ):
-        oso_cloud.Oso.__init__(self, url, api_key)
+        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
 
     def __call__(self):
@@ -65,7 +65,7 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
                 raise KeyError(f"`{r.resource_id}` param not found")
 
         else:
-            resource_id = constants.RESOURCE_ID_DEFAULT
+            resource_id = RESOURCE_ID_DEFAULT
 
         if not self.authorize(
             actor={"type": "User", "id": user_id},
@@ -114,9 +114,9 @@ _oso_bp = Blueprint("oso", __name__)
 class FlaskIntegration(IntegrationConfig):
     @staticmethod
     def init(
-        url: str, api_key: str, optin: bool, exception: Exception | None
+        api_key: str, optin: bool, exception: Exception | None
     ) -> _FlaskIntegration:
-        rv = _FlaskIntegration(url, api_key, optin, exception)
+        rv = _FlaskIntegration(api_key, optin, exception)
         before_request = functools.partial(_before_request, oso=rv)
         _oso_bp.before_app_request(before_request)
         current_app.register_blueprint(_oso_bp)

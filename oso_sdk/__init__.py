@@ -16,7 +16,6 @@ if TYPE_CHECKING:
     class init(ClientConstructor):
         def __init__(
             self,
-            url: str,
             api_key: str,
             integration: IntegrationConfig,
             shared: bool = True,
@@ -32,7 +31,6 @@ if TYPE_CHECKING:
 else:
     # Alias `init and `oso` for actual usage.
     def init(
-        url,
         api_key,
         integration,
         shared: bool = True,
@@ -45,10 +43,10 @@ else:
                 raise RuntimeError(
                     "`oso_sdk.init` cannot be called multiple times when shared=True"
                 )
-            _shared = type(integration).init(url, api_key, optin, exception)
+            _shared = type(integration).init(api_key, optin, exception)
             return _shared
         else:
-            return type(integration).init(url, api_key, optin, exception)
+            return type(integration).init(api_key, optin, exception)
 
     def oso():
         if _shared is None:
