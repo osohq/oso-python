@@ -5,10 +5,10 @@ from . import (
     Integration,
     IntegrationConfig,
     ResourceIdKind,
-    constants,
     to_resource_type,
     utils,
 )
+from .constants import OSO_URL, RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
 import oso_cloud
 import re
@@ -30,10 +30,8 @@ _PARAM_REGEX = re.compile(
 
 
 class _FastApiIntegration(oso_cloud.Oso, Integration):
-    def __init__(
-        self, url: str, api_key: str, optin: bool, exception: Exception | None
-    ):
-        oso_cloud.Oso.__init__(self, url, api_key)
+    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
+        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
 
     async def __call__(self, request: Request):
@@ -63,7 +61,7 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
                 if not resource_id:
                     raise KeyError("`resource_id` param not found")
         else:
-            resource_id = constants.RESOURCE_ID_DEFAULT
+            resource_id = RESOURCE_ID_DEFAULT
 
         if not await _FastApiIntegration._run(
             self.authorize,
@@ -79,6 +77,7 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 
         raise HTTPException(status_code=400)
 
+    @staticmethod
     async def _run(func: Callable[..., Any], *args, **kwargs):
         if inspect.iscoroutinefunction(func):
             return await func(*args, **kwargs)
@@ -113,6 +112,6 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 class FastApiIntegration(IntegrationConfig):
     @staticmethod
     def init(
-        url: str, api_key: str, optin: bool, exception: Exception | None
+        api_key: str, optin: bool, exception: Exception | None
     ) -> _FastApiIntegration:
-        return _FastApiIntegration(url, api_key, optin, exception)
+        return _FastApiIntegration(api_key, optin, exception)

@@ -70,6 +70,6 @@ class Integration:
 class IntegrationConfig:
     @staticmethod
     def init(
-        url: str, api_key: str, optin: bool, exception: Exception | None
+        api_key: str, optin: bool, exception: Exception | None
     ) -> Integration:
         raise NotImplementedError
