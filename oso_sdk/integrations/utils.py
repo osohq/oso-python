@@ -3,7 +3,7 @@ import json
 from ..exceptions import OsoSdkInternalError
 
 
-def default_get_action_from_method(method: str):
+def default_get_action_from_method(method: str | None):
     """Determines CRUD action from HTTP method.
 
     Returns:
@@ -13,7 +13,7 @@ def default_get_action_from_method(method: str):
         ValueError: If method is not supported.
     """
     map = {
-        "get": "read",
+        "get": "view",
         "put": "update",
         "patch": "update",
         "post": "create",
@@ -30,7 +30,7 @@ def default_get_action_from_method(method: str):
     return action
 
 
-def get_sub_from_jwt(authorization: str):
+def get_sub_from_jwt(authorization: str | None):
     """Extracts subject from JWT payload without verification.
 
     Returns:

@@ -25,7 +25,7 @@ if TYPE_CHECKING:
             pass
 
     class oso(ClientConstructor):
-        def __init__():
+        def __init__(self):
             pass
 
 else:
@@ -55,4 +55,4 @@ else:
         return _shared
 
 
-__all__ = ["init" "oso"]
+__all__ = ("init", "oso")

@@ -15,7 +15,7 @@ with app.app_context():
 
 
 @app.route("/org/<int:id>")
-def org(id):
+def org(id: int):
     return {"message": f"Org {id}"}
 
 
