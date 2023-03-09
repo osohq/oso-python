@@ -44,7 +44,7 @@ def get_sub_from_jwt(authorization: str):
     parts = authorization.split(".")
     # JWT is composed of three parts: header, payload, signature
     if len(parts) != 3:
-        raise ValueError(f"JWT token is malformed")
+        raise ValueError("JWT token is malformed")
 
     # Pad payload before decoding; '=' is stripped because it's not URL-safe
     encoding = parts[1] + "=" * (len(parts[1]) % 4)

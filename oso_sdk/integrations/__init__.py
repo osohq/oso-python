@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Callable, TYPE_CHECKING, Dict
+from functools import wraps
+import string
+from typing import Callable, Dict, Tuple
 
 
 class ResourceIdKind(Enum):
@@ -16,6 +18,10 @@ class Route:
     resource_id_kind: ResourceIdKind
 
 
+def to_resource_type(resource_type: str) -> str:
+    return string.capwords(resource_type.replace("_", " ")).replace(" ", "")
+
+
 class Integration:
     def __init__(self):
         self.routes: Dict[str, Route] = {}
@@ -28,13 +34,35 @@ class Integration:
     def identify_action_from_method(self, f: Callable[..., str]):
         self._identify_action_from_method = f
 
+    def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
+        raise NotImplementedError
+
     def enforce(
         self,
         resource_id: str,
         action: str | None = None,
         resource_type: str | None = None,
     ):
-        raise NotImplementedError
+        if len(resource_id) == 0:
+            raise
+
+        resource_id_kind, resource_id = self._parse_resource_id(resource_id)
+
+        def decorator(f):
+            self.routes[f.__name__] = Route(
+                action,
+                resource_type or to_resource_type(f.__name__),
+                resource_id,
+                resource_id_kind,
+            )
+
+            @wraps(f)
+            async def decorated_view(*args, **kwargs):
+                return await f(*args, **kwargs)
+
+            return decorated_view
+
+        return decorator
 
 
 class IntegrationConfig:

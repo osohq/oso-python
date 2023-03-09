@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "oso-client"
+name = "oso-sdk"
 description = "Official Oso integrations for Python web frameworks"
 readme = "README.md"
 requires-python = ">=3.4"
@@ -29,13 +29,15 @@ classifiers = [
     "Programming Language :: Python :: 3.11",
     "Topic :: Software Development :: Libraries :: Python Modules",
 ]
-dependencies = ["oso-cloud >= 1.0.0"]
+dependencies = ["oso-cloud>=1.0.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
 test = ["pytest"]
-dev = ["black == 23.1.0"]
-fastapi = ["fastapi >= 0.79.0"]
+dev = ["black==23.1.0", "ruff"]
+fastapi = ["fastapi>=0.79.0"]
+flask = ["flask>=0.11", "blinker>=1.1"]
 
 [tool.hatch.version]
-path = "oso_client/__init__.py"
+path = "oso_sdk/__init__.py"
+

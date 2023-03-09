@@ -1,14 +1,31 @@
-from functools import wraps
 import inspect
-from typing import Any, Callable
+from typing import Any, Callable, Tuple
 from fastapi import Request
-from . import Integration, IntegrationConfig, ResourceIdKind, Route, constants, utils
+from . import (
+    Integration,
+    IntegrationConfig,
+    ResourceIdKind,
+    constants,
+    to_resource_type,
+    utils,
+)
 import oso_cloud
 import re
-import string
 from starlette.concurrency import run_in_threadpool
 
-PARAM_REGEX = re.compile("{([a-zA-Z_][a-zA-Z0-9_]+)}")
+
+# from starlette.routing import PARAM_REGEX
+# Copy instead of import as a safeguard against future changes to the pattern
+# Match parameters in URL paths, eg. '{param}', and '{param:int}'
+_PARAM_REGEX = re.compile(
+    r"""
+        {
+            (?P<param>[a-zA-Z_][a-zA-Z0-9_]*)   # param name
+            (:[a-zA-Z_][a-zA-Z0-9_]*)?          # optional converter
+        }
+    """,
+    re.VERBOSE,
+)
 
 
 class _FastApiIntegration(oso_cloud.Oso, Integration):
@@ -21,7 +38,9 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 
         user_id = await self._get_user_from_request(request)
         action = (r and r.action) or await self._get_action_from_method(request.method)
-        resource_type = (r and r.resource_type) or request["endpoint"].__name__
+        resource_type = (r and r.resource_type) or to_resource_type(
+            request["endpoint"].__name__
+        )
         if r and r.resource_id:
             if r.resource_id_kind == ResourceIdKind.LITERAL:
                 resource_id = r.resource_id
@@ -63,35 +82,12 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 
         return utils.default_get_action_from_method(method)
 
-    def enforce(
-        self,
-        resource_id: str,
-        action: str | None = None,
-        resource_type: str | None = None,
-    ):
-        matches = PARAM_REGEX.findall(resource_id)
-        if len(matches) == 0:
-            resource_id_kind = ResourceIdKind.LITERAL
+    def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
+        match = _PARAM_REGEX.match(resource_id)
+        if not match:
+            return (ResourceIdKind.LITERAL, resource_id)
         else:
-            resource_id_kind = ResourceIdKind.PARAM
-            resource_id = matches[0]
-
-        def decorator(f):
-            self.routes[f.__name__] = Route(
-                action,
-                resource_type
-                or string.capwords(f.__name__.replace("_", " ")).replace(" ", ""),
-                resource_id,
-                resource_id_kind,
-            )
-
-            @wraps(f)
-            async def decorated_view(*args, **kwargs):
-                return await f(*args, **kwargs)
-
-            return decorated_view
-
-        return decorator
+            return (ResourceIdKind.PARAM, match.group("param"))
 
 
 class FastApiIntegration(IntegrationConfig):
