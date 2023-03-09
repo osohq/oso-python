@@ -25,8 +25,8 @@ def to_resource_type(resource_type: str) -> str:
 class Integration:
     def __init__(self):
         self.routes: Dict[str, Route] = {}
-        self._identify_action_from_method: Callable[..., str] = None
-        self._identify_user_from_request: Callable[..., str] = None
+        self._identify_action_from_method: Callable[..., str] | None = None
+        self._identify_user_from_request: Callable[..., str] | None = None
 
     def identify_user_from_request(self, f: Callable[..., str]):
         self._identify_user_from_request = f
