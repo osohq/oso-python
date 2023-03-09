@@ -30,15 +30,19 @@ _PARAM_REGEX = re.compile(
 
 
 class _FastApiIntegration(oso_cloud.Oso, Integration):
-    def __init__(self, url: str, api_key: str, exception: Exception | None = None):
+    def __init__(
+        self, url: str, api_key: str, optin: bool, exception: Exception | None
+    ):
         oso_cloud.Oso.__init__(self, url, api_key)
-        Integration.__init__(self, exception)
+        Integration.__init__(self, optin, exception)
 
     async def __call__(self, request: Request):
         if not request["endpoint"]:
             return
 
         r = self.routes.get(request["endpoint"].__name__)
+        if self._optin and not r:
+            return
 
         try:
             user_id = await self._get_user_from_request(request)
@@ -109,6 +113,6 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 class FastApiIntegration(IntegrationConfig):
     @staticmethod
     def init(
-        url: str, api_key: str, exception: Exception | None = None
+        url: str, api_key: str, optin: bool, exception: Exception | None
     ) -> _FastApiIntegration:
-        return _FastApiIntegration(url, api_key, exception)
+        return _FastApiIntegration(url, api_key, optin, exception)

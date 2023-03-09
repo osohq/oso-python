@@ -23,10 +23,11 @@ def to_resource_type(resource_type: str) -> str:
 
 
 class Integration:
-    def __init__(self, exception: Exception | None = None):
+    def __init__(self, optin: bool, exception: Exception | None):
         self.routes: Dict[str, Route] = {}
         self._identify_action_from_method: Callable[..., str] | None = None
         self._identify_user_from_request: Callable[..., str] | None = None
+        self._optin = optin
         self._custom_exception: Exception | None = exception
 
     def identify_user_from_request(self, f: Callable[..., str]):
@@ -68,5 +69,7 @@ class Integration:
 
 class IntegrationConfig:
     @staticmethod
-    def init(url: str, api_key: str, exception: Exception | None = None):
+    def init(
+        url: str, api_key: str, optin: bool, exception: Exception | None
+    ) -> Integration:
         raise NotImplementedError

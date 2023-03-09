@@ -8,6 +8,7 @@ oso = oso_sdk.init(
     os.environ["OSO_AUTH"],
     FastApiIntegration(),
     exception=Exception(),
+    optin=True,
 )
 
 app = FastAPI(dependencies=[Depends(oso)])
@@ -19,6 +20,6 @@ def action(method: str):
 
 
 @app.get("/org/{id}")
-@oso.enforce("{id}")
+# @oso.enforce("{id}")
 async def org(id: int):
     return {"message": f"Org {id}"}

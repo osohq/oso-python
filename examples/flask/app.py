@@ -11,6 +11,7 @@ with app.app_context():
         os.environ["OSO_AUTH"],
         FlaskIntegration(),
         exception=Exception(),
+        optin=True,
     )
 
 
