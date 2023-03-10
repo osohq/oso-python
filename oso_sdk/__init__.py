@@ -1,4 +1,4 @@
-from typing import TYPE_CHECKING
+from typing import TYPE_CHECKING, Any
 
 __version__ = "0.1.0"
 
@@ -8,25 +8,31 @@ if TYPE_CHECKING:
     import oso_cloud
     from .integrations import Integration, IntegrationConfig
 
-    class ClientConstructor(oso_cloud.Oso, Integration):
-        pass
-
     # Make static analyzers think `init` and `oso` have the desired return and
     # argument types for nicer autocompletion of params.
-    class init(ClientConstructor):
-        def __init__(
-            self,
-            api_key: str,
-            integration: IntegrationConfig,
-            shared: bool = True,
-            optin: bool = False,
-            exception: Exception | None = None,
-        ):
+
+    class OsoSdk(oso_cloud.Oso, Integration):
+        """TODO
+
+        Args:
+            oso_cloud (_type_): _description_
+            Integration (_type_): _description_
+        """
+
+        def __call__(self, *args: Any, **kwds: Any) -> Any:
             pass
 
-    class oso(ClientConstructor):
-        def __init__(self):
-            pass
+    def init(
+        api_key: str,
+        integration: IntegrationConfig,
+        shared: bool = True,
+        optin: bool = False,
+        exception: Exception | None = None,
+    ) -> OsoSdk:
+        return OsoSdk("a", api_key=api_key)
+
+    def oso() -> OsoSdk:
+        return OsoSdk("a", api_key="api_key")
 
 else:
     # Alias `init and `oso` for actual usage.
