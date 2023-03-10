@@ -32,9 +32,7 @@ _PARAM_REGEX = re.compile(
 
 
 class _FlaskIntegration(oso_cloud.Oso, Integration):
-    def __init__(
-        self, api_key: str, optin: bool, exception: Exception | None
-    ):
+    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
         oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
 
@@ -112,6 +110,15 @@ _oso_bp = Blueprint("oso", __name__)
 
 
 class FlaskIntegration(IntegrationConfig):
+    """TODO
+
+    Args:
+        IntegrationConfig (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     @staticmethod
     def init(
         api_key: str, optin: bool, exception: Exception | None

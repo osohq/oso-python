@@ -1,6 +1,8 @@
 import inspect
 from typing import Any, Callable, Tuple
 from fastapi import HTTPException, Request
+
+from oso_sdk import OsoSdk
 from . import (
     Integration,
     IntegrationConfig,
@@ -29,7 +31,7 @@ _PARAM_REGEX = re.compile(
 )
 
 
-class _FastApiIntegration(oso_cloud.Oso, Integration):
+class _FastApiIntegration(OsoSdk):
     def __init__(self, api_key: str, optin: bool, exception: Exception | None):
         oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
@@ -75,10 +77,19 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
         if self._custom_exception:
             raise self._custom_exception
 
-        raise HTTPException(status_code=400)
+        raise HTTPException(status_code=404)
 
     @staticmethod
     async def _run(func: Callable[..., Any], *args, **kwargs):
+        """TODO
+        support for sync and async (documenting bc this is the most
+        FastAPI specific function on this class)
+        Args:
+            func (Callable[..., Any]): _description_
+
+        Returns:
+            _type_: _description_
+        """
         if inspect.iscoroutinefunction(func):
             return await func(*args, **kwargs)
         else:
@@ -110,6 +121,16 @@ class _FastApiIntegration(oso_cloud.Oso, Integration):
 
 
 class FastApiIntegration(IntegrationConfig):
+    """TODO
+    the callable you pass to `identify_user_from_request` is a blah
+
+    Args:
+        IntegrationConfig (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
+
     @staticmethod
     def init(
         api_key: str, optin: bool, exception: Exception | None
