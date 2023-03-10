@@ -6,7 +6,7 @@ build-backend = "hatchling.build"
 name = "oso-sdk"
 description = "Official Oso integrations for Python web frameworks"
 readme = "README.md"
-requires-python = ">=3.4"
+requires-python = ">=3.8"
 license = "Apache-2.0"
 authors = [
     { name = "Oso Team and Contributors", email = "engineering@osohq.com" },
@@ -19,10 +19,6 @@ classifiers = [
     "Operating System :: OS Independent",
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.4",
-    "Programming Language :: Python :: 3.5",
-    "Programming Language :: Python :: 3.6",
-    "Programming Language :: Python :: 3.7",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -35,7 +31,7 @@ dynamic = ["version"]
 [project.optional-dependencies]
 test = ["pytest"]
 dev = ["black==23.1.0", "ruff"]
-fastapi = ["fastapi>=0.79.0"]
+fastapi = ["fastapi>=0.79.0", "starlette>=0.20.0"]
 flask = ["flask>=0.11", "blinker>=1.1"]
 
 [tool.hatch.version]
