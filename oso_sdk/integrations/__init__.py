@@ -1,10 +1,9 @@
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
+import inspect
 import string
-from typing import Callable, Dict, Tuple
-
-from oso_sdk import OsoSdk
+from typing import Dict, Tuple
 
 
 class ResourceIdKind(Enum):
@@ -29,12 +28,12 @@ class Integration:
 
     def __init__(self, optin: bool, exception: Exception | None):
         self.routes: Dict[str, Route] = {}
-        self._identify_action_from_method: Callable[..., str] | None = None
-        self._identify_user_from_request: Callable[..., str] | None = None
+        self._identify_action_from_method = None
+        self._identify_user_from_request = None
         self._optin = optin
         self._custom_exception: Exception | None = exception
 
-    def identify_user_from_request(self, f: Callable[..., str]):
+    def identify_user_from_request(self, f):
         """TODO
 
         Args:
@@ -42,13 +41,12 @@ class Integration:
         """
         self._identify_user_from_request = f
 
-    def identify_action_from_method(self, f: Callable[..., str]):
+    def identify_action_from_method(self, f):
         """TODO
 
         Args:
             f (Callable[..., str]): _description_
         """
-        print("inner")
         self._identify_action_from_method = f
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
@@ -87,21 +85,16 @@ class Integration:
             )
 
             @wraps(f)
-            async def decorated_view(*args, **kwargs):
+            async def decorated_view_async(*args, **kwargs):
                 return await f(*args, **kwargs)
 
-            return decorated_view
+            @wraps(f)
+            def decorated_view_sync(*args, **kwargs):
+                return f(*args, **kwargs)
+
+            if inspect.iscoroutinefunction(f):
+                return decorated_view_async
+            else:
+                return decorated_view_sync
 
         return decorator
-
-
-class IntegrationConfig:
-    """TODO
-
-    Raises:
-        NotImplementedError: _description_
-    """
-
-    @staticmethod
-    def init(api_key: str, optin: bool, exception: Exception | None) -> OsoSdk:
-        raise NotImplementedError

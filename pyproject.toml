@@ -29,10 +29,19 @@ dependencies = ["oso-cloud>=1.0.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = ["pytest", "httpx"]
 dev = ["black==23.1.0", "ruff"]
 fastapi = ["fastapi>=0.79.0", "starlette>=0.20.0"]
 flask = ["flask>=0.11", "blinker>=1.1"]
+all = [
+    "pytest",
+    "httpx",
+    "black",
+    "ruff",
+    "fastapi",
+    "flask[async]",
+    "blinker",
+]
 
 [tool.hatch.version]
 path = "oso_sdk/__init__.py"

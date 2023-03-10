@@ -1,18 +1,15 @@
 import inspect
-from typing import Any, Callable, Tuple
+from typing import Tuple
 from fastapi import HTTPException, Request
 
-from oso_sdk import OsoSdk
+from oso_sdk import OsoSdk, IntegrationConfig
 from . import (
-    Integration,
-    IntegrationConfig,
     ResourceIdKind,
     to_resource_type,
     utils,
 )
-from .constants import OSO_URL, RESOURCE_ID_DEFAULT
+from ..constants import RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
-import oso_cloud
 import re
 from starlette.concurrency import run_in_threadpool
 
@@ -32,10 +29,6 @@ _PARAM_REGEX = re.compile(
 
 
 class _FastApiIntegration(OsoSdk):
-    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
-        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
-        Integration.__init__(self, optin, exception)
-
     async def __call__(self, request: Request):
         if not request["endpoint"]:
             return
@@ -59,9 +52,9 @@ class _FastApiIntegration(OsoSdk):
             if r.resource_id_kind == ResourceIdKind.LITERAL:
                 resource_id = r.resource_id
             else:
-                resource_id = request.path_params[r.resource_id]
-                if not resource_id:
-                    raise KeyError("`resource_id` param not found")
+                resource_id = request.path_params.get(r.resource_id)
+                if resource_id is None:
+                    raise KeyError(f"`{r.resource_id} param not found")
         else:
             resource_id = RESOURCE_ID_DEFAULT
 
@@ -80,7 +73,7 @@ class _FastApiIntegration(OsoSdk):
         raise HTTPException(status_code=404)
 
     @staticmethod
-    async def _run(func: Callable[..., Any], *args, **kwargs):
+    async def _run(func, *args, **kwargs):
         """TODO
         support for sync and async (documenting bc this is the most
         FastAPI specific function on this class)
@@ -113,11 +106,13 @@ class _FastApiIntegration(OsoSdk):
         return utils.default_get_action_from_method(method)
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
-        match = _PARAM_REGEX.match(resource_id)
-        if not match:
+        matches = _PARAM_REGEX.findall(resource_id)
+        if not matches:
             return (ResourceIdKind.LITERAL, resource_id)
+        elif len(matches) > 1:
+            raise ValueError("Only one path parameter may be used")
         else:
-            return (ResourceIdKind.PARAM, match.group("param"))
+            return (ResourceIdKind.PARAM, matches[0][0])
 
 
 class FastApiIntegration(IntegrationConfig):
