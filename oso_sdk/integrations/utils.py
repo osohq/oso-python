@@ -49,8 +49,11 @@ def get_sub_from_jwt(authorization: str | None):
 
     # Pad payload before decoding; '=' is stripped because it's not URL-safe
     encoding = parts[1] + "=" * (len(parts[1]) % 4)
-    payload = base64.urlsafe_b64decode(encoding)
-    data = json.loads(payload.decode("utf-8"))
+    try:
+        payload = base64.urlsafe_b64decode(encoding)
+        data = json.loads(payload.decode("utf-8"))
+    except UnicodeDecodeError:
+        raise OsoSdkInternalError("JWT payload can't be decoded")
 
     sub = data.get("sub")
     if sub is None:

@@ -1,15 +1,18 @@
-from typing import TYPE_CHECKING, Any
+from typing import Any
+import oso_cloud
+from .constants import OSO_URL
+from .integrations import Integration
 
 __version__ = "0.1.0"
 
 _shared = None
 
 
-import oso_cloud
-from .integrations import Integration, IntegrationConfig
-
-
 class OsoSdk(oso_cloud.Oso, Integration):
+    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
+        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
+        Integration.__init__(self, optin, exception)
+
     """TODO
 
     Args:
@@ -31,8 +34,20 @@ class OsoSdk(oso_cloud.Oso, Integration):
         raise NotImplementedError
 
 
+class IntegrationConfig:
+    """TODO
+
+    Raises:
+        NotImplementedError: _description_
+    """
+
+    @staticmethod
+    def init(api_key: str, optin: bool, exception: Exception | None) -> OsoSdk:
+        raise NotImplementedError
+
+
 def init(
-    api_key,
+    api_key: str,
     integration: IntegrationConfig,
     shared: bool = True,
     optin: bool = False,

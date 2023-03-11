@@ -1,16 +1,15 @@
 import functools
 from typing import Tuple
 from flask import abort, current_app, request, Blueprint
+
+from oso_sdk import OsoSdk, IntegrationConfig
 from . import (
-    Integration,
-    IntegrationConfig,
     ResourceIdKind,
     utils,
     to_resource_type,
 )
-from .constants import OSO_URL, RESOURCE_ID_DEFAULT
+from ..constants import RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
-import oso_cloud
 import re
 
 # from werkzeug.routing.rules import _part_re
@@ -31,11 +30,7 @@ _PARAM_REGEX = re.compile(
 )
 
 
-class _FlaskIntegration(oso_cloud.Oso, Integration):
-    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
-        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
-        Integration.__init__(self, optin, exception)
-
+class _FlaskIntegration(OsoSdk):
     def __call__(self):
         # Route is not declared
         if request.endpoint is None:
@@ -77,7 +72,7 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
             raise self._custom_exception
 
         else:
-            abort(400)
+            abort(404)
 
     def _get_user_from_request(self) -> str:
         if self._identify_user_from_request:
@@ -93,20 +88,19 @@ class _FlaskIntegration(oso_cloud.Oso, Integration):
         return utils.default_get_action_from_method(request.method)
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
-        match = _PARAM_REGEX.match(resource_id)
-        if not match:
+        matches = _PARAM_REGEX.findall(resource_id)
+        if not matches:
             return (ResourceIdKind.LITERAL, resource_id)
+        if len(matches) > 1:
+            raise ValueError("Only one path parameter may be used")
         else:
-            return (ResourceIdKind.PARAM, match.group("variable"))
+            return (ResourceIdKind.PARAM, matches[0][2])
 
 
 def _before_request(**kwargs):
     kwargs["oso"]()
 
     return
-
-
-_oso_bp = Blueprint("oso", __name__)
 
 
 class FlaskIntegration(IntegrationConfig):
@@ -125,6 +119,7 @@ class FlaskIntegration(IntegrationConfig):
     ) -> _FlaskIntegration:
         rv = _FlaskIntegration(api_key, optin, exception)
         before_request = functools.partial(_before_request, oso=rv)
-        _oso_bp.before_app_request(before_request)
-        current_app.register_blueprint(_oso_bp)
+        oso_bp = Blueprint("oso", __name__)
+        oso_bp.before_app_request(before_request)
+        current_app.register_blueprint(oso_bp)
         return rv
