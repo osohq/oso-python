@@ -1,7 +1,9 @@
+import os
+
 from fastapi import Depends, FastAPI
+
 import oso_sdk
 from oso_sdk.integrations.fastapi import FastApiIntegration
-import os
 
 oso = oso_sdk.init(
     os.environ["OSO_AUTH"],

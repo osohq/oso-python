@@ -1,5 +1,7 @@
-from typing import Any
-import oso_cloud
+from typing import Any, Optional
+
+import oso_cloud  # type: ignore
+
 from .constants import OSO_URL
 from .integrations import Integration
 
@@ -9,7 +11,7 @@ _shared = None
 
 
 class OsoSdk(oso_cloud.Oso, Integration):
-    def __init__(self, api_key: str, optin: bool, exception: Exception | None):
+    def __init__(self, api_key: str, optin: bool, exception: Optional[Exception]):
         oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
 
@@ -31,7 +33,7 @@ class OsoSdk(oso_cloud.Oso, Integration):
         Returns:
             Any: _description_
         """
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
 
 class IntegrationConfig:
@@ -42,8 +44,8 @@ class IntegrationConfig:
     """
 
     @staticmethod
-    def init(api_key: str, optin: bool, exception: Exception | None) -> OsoSdk:
-        raise NotImplementedError
+    def init(api_key: str, optin: bool, exception: Optional[Exception]) -> OsoSdk:
+        raise NotImplementedError  # pragma: no cover
 
 
 def init(
@@ -51,7 +53,7 @@ def init(
     integration: IntegrationConfig,
     shared: bool = True,
     optin: bool = False,
-    exception: Exception | None = None,
+    exception: Optional[Exception] = None,
 ) -> OsoSdk:
     """TODO
 

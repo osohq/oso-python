@@ -1,9 +1,11 @@
 import asyncio
+
 import pytest
 from flask import Flask
+
+import oso_sdk
 from oso_sdk.integrations import ResourceIdKind
 from oso_sdk.integrations.flask import FlaskIntegration, _FlaskIntegration
-import oso_sdk
 
 
 @pytest.fixture
@@ -80,6 +82,10 @@ def test_default(app_default, mock_oso_allowed, jwt_token_header, test_user):
         return {"status": "ok"}
 
     client = app.test_client()
+
+    resp = client.get("/")
+    assert resp.status_code == 404
+
     resp = client.post("/org", headers=jwt_token_header)
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(

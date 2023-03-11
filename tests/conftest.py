@@ -1,6 +1,7 @@
-import pytest
 from unittest.mock import patch
-import oso_cloud
+
+import oso_cloud  # type: ignore
+import pytest
 
 
 @pytest.fixture
