@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "oso-sdk"
-description = "Official Oso integrations for Python web frameworks"
+description = "The official Python integrations for Oso Cloud"
 readme = "README.md"
 requires-python = ">=3.8"
 license = "Apache-2.0"
@@ -27,19 +27,26 @@ classifiers = [
 dependencies = ["oso-cloud>=1.0.0"]
 dynamic = ["version"]
 
+[project.urls]
+Homepage = "https://github.com/osohq/oso-python"
+
 [project.optional-dependencies]
 test = [
     "black==23.1.0",
     "coverage[toml]>=7.2.1",
-    "fastapi==0.79.0",
-    "flask[async]==2.0.0",
+    "fastapi==0.79.0; python_version==3.8",
+    "fastapi>=0.79.0; python_version>3.8",
+    "flask[async]==2.0.0; python_version==3.8",
+    "flask[async]>=2.0.0; python_version>3.8",
     "httpx==0.23.3",
     "isort==5.12.0",
     "mypy==1.1.1",
     "pytest==7.2.2",
     "ruff==0.0.254",
-    "starlette==0.19.1",
-    "werkzeug==2.0.3",
+    "starlette==0.19.1; python_version==3.8",
+    "starlette>=0.19.1; python_version>3.8",
+    "werkzeug==2.0.3; python_version==3.8",
+    "werkzeug>=2.0.3; python_version>=3.8"
 ]
 example = ["uvicorn[standard]>=0.21.0"]
 fastapi = ["fastapi>=0.79.0", "starlette>=0.19.1"]
