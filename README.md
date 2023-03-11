@@ -39,3 +39,6 @@ Please refer to [CONTRIBUTING.md](CONTRIBUTING.md).
 ## License
 
 Licensed under the Apache 2.0 license, see [LICENSE](LICENSE).
+
+[join-slack-link]: https://user-images.githubusercontent.com/282595/128394344-1bd9e5b2-e83d-4666-b446-2e4f431ffcea.png
+[badge-slack-link]: https://join-slack.osohq.com/
