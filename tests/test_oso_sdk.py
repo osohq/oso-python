@@ -1,8 +1,7 @@
 from typing import Optional, Tuple
 
-import pytest
-
 import oso_sdk
+import pytest
 from oso_sdk import IntegrationConfig, OsoSdk
 from oso_sdk.integrations import ResourceIdKind
 

@@ -1,5 +1,4 @@
 import pytest
-
 from oso_sdk.exceptions import OsoSdkInternalError
 from oso_sdk.integrations.utils import default_get_action_from_method, get_sub_from_jwt
 

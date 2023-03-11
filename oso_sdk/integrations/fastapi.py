@@ -1,11 +1,11 @@
 import inspect
 import re
+import traceback
 from typing import Optional, Tuple
 
 from fastapi import HTTPException, Request
-from starlette.concurrency import run_in_threadpool
-
 from oso_sdk import IntegrationConfig, OsoSdk
+from starlette.concurrency import run_in_threadpool
 
 from ..constants import RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
@@ -40,6 +40,7 @@ class _FastApiIntegration(OsoSdk):
                 request.method
             )
         except OsoSdkInternalError:
+            traceback.print_exc()
             self._unauthorized()
 
         resource_type = (r and r.resource_type) or to_resource_type(
@@ -57,12 +58,16 @@ class _FastApiIntegration(OsoSdk):
         else:
             resource_id = RESOURCE_ID_DEFAULT
 
-        if not await _FastApiIntegration._run(
-            self.authorize,
-            actor={"type": "User", "id": user_id},
-            action=action,
-            resource={"type": resource_type, "id": resource_id},
-        ):
+        try:
+            if not await _FastApiIntegration._run(
+                self.authorize,
+                actor={"type": "User", "id": str(user_id)},
+                action=str(action),
+                resource={"type": resource_type, "id": str(resource_id)},
+            ):
+                self._unauthorized()
+        except Exception:
+            traceback.print_exc()
             self._unauthorized()
 
     def _unauthorized(self):
