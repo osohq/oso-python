@@ -1,9 +1,9 @@
 import functools
 import re
+import traceback
 from typing import Optional, Tuple
 
 from flask import Blueprint, abort, current_app, request
-
 from oso_sdk import IntegrationConfig, OsoSdk
 
 from ..constants import RESOURCE_ID_DEFAULT
@@ -42,6 +42,7 @@ class _FlaskIntegration(OsoSdk):
             user_id = self._get_user_from_request()
             action = (r and r.action) or self._get_action_from_method()
         except OsoSdkInternalError:
+            traceback.print_exc()
             self._unauthorized()
 
         resource_type = (r and r.resource_type) or to_resource_type(request.endpoint)
@@ -60,11 +61,15 @@ class _FlaskIntegration(OsoSdk):
         else:
             resource_id = RESOURCE_ID_DEFAULT
 
-        if not self.authorize(
-            actor={"type": "User", "id": user_id},
-            action=action,
-            resource={"type": resource_type, "id": resource_id},
-        ):
+        try:
+            if not self.authorize(
+                actor={"type": "User", "id": str(user_id)},
+                action=str(action),
+                resource={"type": resource_type, "id": str(resource_id)},
+            ):
+                self._unauthorized()
+        except Exception:
+            traceback.print_exc()
             self._unauthorized()
 
     def _unauthorized(self):
@@ -83,7 +88,9 @@ class _FlaskIntegration(OsoSdk):
 
     def _get_action_from_method(self) -> str:
         if self._identify_action_from_method:
-            return current_app.ensure_sync(self._identify_action_from_method)()
+            return current_app.ensure_sync(self._identify_action_from_method)(
+                request.method
+            )
 
         return utils.default_get_action_from_method(request.method)
 

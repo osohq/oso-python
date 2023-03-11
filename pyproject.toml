@@ -57,7 +57,7 @@ path = "oso_sdk/__init__.py"
 
 [tool.isort]
 profile = "black"
-known_third_party = ["oso_cloud", "fastapi", "flask", "starlette"]
+known_third_party = ["oso_cloud", "oso_sdk", "fastapi", "flask", "starlette"]
 
 [tool.mypy]
 strict = false

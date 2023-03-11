@@ -1,9 +1,8 @@
 import asyncio
 
+import oso_sdk
 import pytest
 from flask import Flask
-
-import oso_sdk
 from oso_sdk.integrations import ResourceIdKind
 from oso_sdk.integrations.flask import FlaskIntegration, _FlaskIntegration
 
@@ -284,7 +283,7 @@ def test_custom_action_func_sync(
         return {"status": "ok"}
 
     @oso.identify_action_from_method
-    def action() -> str:
+    def action(_: str) -> str:
         return "bar"
 
     client = app.test_client()
@@ -304,7 +303,7 @@ def test_custom_action_func_async(
         return {"status": "ok"}
 
     @oso.identify_action_from_method
-    async def action() -> str:
+    async def action(_: str) -> str:
         await asyncio.sleep(0.1)
         return "bar"
 

@@ -1,11 +1,10 @@
 import asyncio
 from typing import Optional, Tuple
 
+import oso_sdk
 import pytest
 from fastapi import Depends, FastAPI, Request
 from fastapi.testclient import TestClient
-
-import oso_sdk
 from oso_sdk.integrations import ResourceIdKind
 from oso_sdk.integrations.fastapi import FastApiIntegration, _FastApiIntegration
 
