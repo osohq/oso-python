@@ -1,9 +1,9 @@
+import inspect
+import string
 from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
-import inspect
-import string
-from typing import Dict, Tuple
+from typing import Dict, Optional, Tuple
 
 
 class ResourceIdKind(Enum):
@@ -13,9 +13,9 @@ class ResourceIdKind(Enum):
 
 @dataclass
 class Route:
-    action: str | None
-    resource_type: str | None
-    resource_id: str | None
+    action: Optional[str]
+    resource_type: Optional[str]
+    resource_id: str
     resource_id_kind: ResourceIdKind
 
 
@@ -26,12 +26,12 @@ def to_resource_type(resource_type: str) -> str:
 class Integration:
     """_summary_"""
 
-    def __init__(self, optin: bool, exception: Exception | None):
+    def __init__(self, optin: bool, exception: Optional[Exception]):
         self.routes: Dict[str, Route] = {}
         self._identify_action_from_method = None
         self._identify_user_from_request = None
         self._optin = optin
-        self._custom_exception: Exception | None = exception
+        self._custom_exception: Optional[Exception] = exception
 
     def identify_user_from_request(self, f):
         """TODO
@@ -50,13 +50,13 @@ class Integration:
         self._identify_action_from_method = f
 
     def _parse_resource_id(self, resource_id: str) -> Tuple[ResourceIdKind, str]:
-        raise NotImplementedError
+        raise NotImplementedError  # pragma: no cover
 
     def enforce(
         self,
         resource_id: str,
-        action: str | None = None,
-        resource_type: str | None = None,
+        action: Optional[str] = None,
+        resource_type: Optional[str] = None,
     ):
         """TODO
 

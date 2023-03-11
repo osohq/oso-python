@@ -1,16 +1,14 @@
 import functools
-from typing import Tuple
-from flask import abort, current_app, request, Blueprint
+import re
+from typing import Optional, Tuple
 
-from oso_sdk import OsoSdk, IntegrationConfig
-from . import (
-    ResourceIdKind,
-    utils,
-    to_resource_type,
-)
+from flask import Blueprint, abort, current_app, request
+
+from oso_sdk import IntegrationConfig, OsoSdk
+
 from ..constants import RESOURCE_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
-import re
+from . import ResourceIdKind, to_resource_type, utils
 
 # from werkzeug.routing.rules import _part_re
 # Extract parameter regex and copy instead of import as a safeguard against
@@ -53,9 +51,11 @@ class _FlaskIntegration(OsoSdk):
             elif request.view_args:
                 resource_id = request.view_args.get(r.resource_id)
                 if resource_id is None:
-                    raise KeyError(f"`{r.resource_id} param not found")
+                    raise KeyError(
+                        f"`{r.resource_id} param not found"
+                    )  # pragma: no cover
             else:
-                raise KeyError(f"`{r.resource_id}` param not found")
+                raise KeyError(f"`{r.resource_id}` param not found")  # pragma: no cover
 
         else:
             resource_id = RESOURCE_ID_DEFAULT
@@ -115,7 +115,7 @@ class FlaskIntegration(IntegrationConfig):
 
     @staticmethod
     def init(
-        api_key: str, optin: bool, exception: Exception | None
+        api_key: str, optin: bool, exception: Optional[Exception]
     ) -> _FlaskIntegration:
         rv = _FlaskIntegration(api_key, optin, exception)
         before_request = functools.partial(_before_request, oso=rv)

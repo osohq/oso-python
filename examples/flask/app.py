@@ -1,7 +1,9 @@
+import os
+
 from flask import Flask
+
 import oso_sdk
 from oso_sdk.integrations.flask import FlaskIntegration
-import os
 
 app = Flask(__name__)
 

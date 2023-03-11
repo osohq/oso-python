@@ -1,16 +1,18 @@
 import asyncio
-from typing import Tuple
+from typing import Optional, Tuple
+
 import pytest
 from fastapi import Depends, FastAPI, Request
 from fastapi.testclient import TestClient
+
+import oso_sdk
 from oso_sdk.integrations import ResourceIdKind
 from oso_sdk.integrations.fastapi import FastApiIntegration, _FastApiIntegration
-import oso_sdk
 
 
 def fastapi_app_factory(
     optin: bool = False,
-    exception: Exception | None = None,
+    exception: Optional[Exception] = None,
 ) -> Tuple[FastAPI, oso_sdk.OsoSdk]:
     oso = oso_sdk.init(
         "API_KEY", FastApiIntegration(), shared=False, optin=optin, exception=exception
@@ -47,6 +49,9 @@ def test_default(mock_oso_allowed, jwt_token, test_user):
 
     client = TestClient(app)
     client.headers = {"Authorization": f"Bearer {jwt_token}"}
+
+    resp = client.get("/")
+    assert resp.status_code == 404
 
     resp = client.post("/org")
     assert resp.json()["status"] == "ok"
@@ -93,6 +98,13 @@ def test_enforce_override(mock_oso_allowed, jwt_token, test_user):
     @oso.enforce("{id}", "bar", "Baz")
     async def org(id: int):
         return {"status": "ok"}
+
+    with pytest.raises(ValueError):
+
+        @app.get("/repo/{id}")
+        @oso.enforce("")
+        async def repo(id: int):
+            return {"status": "ok"}
 
     client = TestClient(app)
     client.headers = {"Authorization": f"Bearer {jwt_token}"}

@@ -1,9 +1,11 @@
 import base64
 import json
+from typing import Optional
+
 from ..exceptions import OsoSdkInternalError
 
 
-def default_get_action_from_method(method: str | None):
+def default_get_action_from_method(method: Optional[str]):
     """Determines CRUD action from HTTP method.
 
     Returns:
@@ -30,7 +32,7 @@ def default_get_action_from_method(method: str | None):
     return action
 
 
-def get_sub_from_jwt(authorization: str | None):
+def get_sub_from_jwt(authorization: Optional[str]):
     """Extracts subject from JWT payload without verification.
 
     Returns:
@@ -52,8 +54,8 @@ def get_sub_from_jwt(authorization: str | None):
     try:
         payload = base64.urlsafe_b64decode(encoding)
         data = json.loads(payload.decode("utf-8"))
-    except UnicodeDecodeError:
-        raise OsoSdkInternalError("JWT payload can't be decoded")
+    except UnicodeDecodeError as e:
+        raise OsoSdkInternalError("JWT payload can't be decoded") from e
 
     sub = data.get("sub")
     if sub is None:

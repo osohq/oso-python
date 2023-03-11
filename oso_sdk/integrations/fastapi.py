@@ -1,18 +1,15 @@
 import inspect
-from typing import Tuple
-from fastapi import HTTPException, Request
-
-from oso_sdk import OsoSdk, IntegrationConfig
-from . import (
-    ResourceIdKind,
-    to_resource_type,
-    utils,
-)
-from ..constants import RESOURCE_ID_DEFAULT
-from ..exceptions import OsoSdkInternalError
 import re
+from typing import Optional, Tuple
+
+from fastapi import HTTPException, Request
 from starlette.concurrency import run_in_threadpool
 
+from oso_sdk import IntegrationConfig, OsoSdk
+
+from ..constants import RESOURCE_ID_DEFAULT
+from ..exceptions import OsoSdkInternalError
+from . import ResourceIdKind, to_resource_type, utils
 
 # from starlette.routing import PARAM_REGEX
 # Copy instead of import as a safeguard against future changes to the pattern
@@ -31,7 +28,7 @@ _PARAM_REGEX = re.compile(
 class _FastApiIntegration(OsoSdk):
     async def __call__(self, request: Request):
         if not request["endpoint"]:
-            return
+            return  # pragma: no cover
 
         r = self.routes.get(request["endpoint"].__name__)
         if self._optin and not r:
@@ -52,9 +49,11 @@ class _FastApiIntegration(OsoSdk):
             if r.resource_id_kind == ResourceIdKind.LITERAL:
                 resource_id = r.resource_id
             else:
-                resource_id = request.path_params.get(r.resource_id)
+                resource_id = request.path_params.get(r.resource_id)  # type: ignore
                 if resource_id is None:
-                    raise KeyError(f"`{r.resource_id} param not found")
+                    raise KeyError(
+                        f"`{r.resource_id} param not found"
+                    )  # pragma: no cover
         else:
             resource_id = RESOURCE_ID_DEFAULT
 
@@ -128,6 +127,6 @@ class FastApiIntegration(IntegrationConfig):
 
     @staticmethod
     def init(
-        api_key: str, optin: bool, exception: Exception | None
+        api_key: str, optin: bool, exception: Optional[Exception]
     ) -> _FastApiIntegration:
         return _FastApiIntegration(api_key, optin, exception)

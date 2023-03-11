@@ -17,8 +17,7 @@ classifiers = [
     "Intended Audience :: Developers",
     "License :: OSI Approved :: BSD License",
     "Operating System :: OS Independent",
-    "Programming Language :: Python",
-    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
     "Programming Language :: Python :: 3.8",
     "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
@@ -29,19 +28,54 @@ dependencies = ["oso-cloud>=1.0.0"]
 dynamic = ["version"]
 
 [project.optional-dependencies]
-test = ["pytest", "httpx"]
-dev = ["black==23.1.0", "ruff"]
-fastapi = ["fastapi>=0.79.0", "starlette>=0.20.0"]
-flask = ["flask>=0.11", "blinker>=1.1"]
-all = [
-    "pytest",
-    "httpx",
-    "black",
-    "ruff",
-    "fastapi",
-    "flask[async]",
-    "blinker",
+test = [
+    "black==23.1.0",
+    "coverage[toml]>=7.2.1",
+    "fastapi==0.79.0",
+    "flask[async]==2.0.0",
+    "httpx==0.23.3",
+    "isort==5.12.0",
+    "mypy==1.1.1",
+    "pytest==7.2.2",
+    "ruff==0.0.254",
+    "starlette==0.19.1",
+    "werkzeug==2.0.3",
 ]
+example = ["uvicorn[standard]>=0.21.0"]
+fastapi = ["fastapi>=0.79.0", "starlette>=0.19.1"]
+flask = ["flask>=2.0.0"]
 
 [tool.hatch.version]
 path = "oso_sdk/__init__.py"
+
+[tool.isort]
+profile = "black"
+known_third_party = ["oso_cloud", "fastapi", "flask", "starlette"]
+
+[tool.mypy]
+strict = false
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers"]
+xfail_strict = true
+junit_family = "xunit2"
+
+[tool.coverage.run]
+parallel = true
+source = [
+    "oso_sdk"
+]
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+]
