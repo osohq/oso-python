@@ -1,10 +1,5 @@
-name: Publish Python client
-on:
-  workflow_dispatch:
-    inputs:
-      version:
-        description: "Version number must match code version."
-        required: true
+name: Publish
+on: workflow_dispatch
 
 jobs:
   publish:
