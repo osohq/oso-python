@@ -111,15 +111,6 @@ def _before_request(**kwargs):
 
 
 class FlaskIntegration(IntegrationConfig):
-    """TODO
-
-    Args:
-        IntegrationConfig (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-
     @staticmethod
     def init(
         api_key: str, optin: bool, exception: Optional[Exception]

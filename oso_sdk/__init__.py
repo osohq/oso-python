@@ -15,23 +15,18 @@ class OsoSdk(oso_cloud.Oso, Integration):
         oso_cloud.Oso.__init__(self, OSO_URL, api_key)
         Integration.__init__(self, optin, exception)
 
-    """TODO
+    """A handle to Oso Cloud.
 
-    Args:
-        oso_cloud (_type_): _description_
-        Integration (_type_): _description_
+    You should not instantiate this class directly. Use `oso_sdk.init` or
+    `oso_sdk.global_oso` instead.
     """
 
     def __call__(self, *args: Any, **kwds: Any) -> Any:
-        """TODO
+        """This is trickery for static analyzers.
 
-        This is trickery for static analyzers
-
-        Raises:
-            NotImplementedError: _description_
-
-        Returns:
-            Any: _description_
+        Some integrations need to be `Callable` to work nice with their respective
+        framework. This prevents static analyzers from complaining that an `OsoSdk`
+        instance isn't a callable.
         """
         raise NotImplementedError  # pragma: no cover
 
@@ -55,22 +50,21 @@ def init(
     optin: bool = False,
     exception: Optional[Exception] = None,
 ) -> OsoSdk:
-    """TODO
-
-    Create an OsoSdk
+    """Create an instance of the Oso SDK.
 
     Args:
-        api_key (_type_): _description_
-        integration (IntegrationConfig): _description_
-        shared (bool, optional): _description_. Defaults to True.
-        optin (bool, optional): _description_. Defaults to False.
-        exception (Exception | None, optional): _description_. Defaults to None.
+        api_key (str): An Oso Cloud api key.
+        integration (IntegrationConfig): A class implementing `IntegrationConfig`.
+            e.g. `FastApiIntegration`, `FlaskIntegration`.
+        shared (bool, optional): Create a global `OsoSdk` object that can be accessed
+            by subsequent calls to `global_oso()`. Defaults to True.
+        optin (bool, optional): Only enforce routes with the `@oso.enforce` decorator.
+            Defaults to False.
+        exception (Optional[Exception], optional): raise a custom exception on
+            authorization failure. Defaults to None.
 
     Raises:
-        RuntimeError: _description_
-
-    Returns:
-        OsoSdk: _description_
+        RuntimeError: If called multiple times when shared=True
     """
     if shared:
         global _shared
@@ -85,15 +79,11 @@ def init(
 
 
 def global_oso() -> OsoSdk:
-    """TODO
-
-    Call this to get the existing global `OsoSdk`
+    """Get the global `OsoSdk` instance.
 
     Raises:
-        RuntimeError: the global oso was never initialized
-
-    Returns:
-        OsoSdk: _description_
+        RuntimeError: If the global instance was never initialized by calling
+            `oso_sdk.init` must first be called with shared=True.
     """
     if _shared is None:
         raise RuntimeError("`oso_sdk.init` must first be called with shared=True")
