@@ -4,12 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "oso-sdk"
-description = "The official Python integrations for Oso Cloud"
+description = "Python integrations for Oso Cloud"
 readme = "README.md"
 requires-python = ">=3.8"
-license = "Apache-2.0"
 authors = [
-    { name = "Oso Team and Contributors", email = "engineering@osohq.com" },
+    { name = "Oso Security", email = "support@osohq.com" },
 ]
 classifiers = [
     "Development Status :: 4 - Beta",
@@ -28,7 +27,8 @@ dependencies = ["oso-cloud>=1.0.0"]
 dynamic = ["version"]
 
 [project.urls]
-Homepage = "https://github.com/osohq/oso-python"
+Homepage = "https://www.osohq.com/"
+Documentation = "https://www.osohq.com/docs"
 
 [project.optional-dependencies]
 test = [
