@@ -82,7 +82,7 @@ def global_oso() -> OsoSdk:
     """Get the global `OsoSdk` instance.
 
     Raises:
-        RuntimeError: IF the global instance was never initialized by calling
+        RuntimeError: If the global instance was never initialized by calling
             `oso_sdk.init` must first be called with shared=True.
     """
     if _shared is None:
