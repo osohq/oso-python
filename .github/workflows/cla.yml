@@ -15,7 +15,7 @@ jobs:
         uses: cla-assistant/github-action@v2.0.2-alpha
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN_GJ_CLA_ASSISTANT }}
+          PERSONAL_ACCESS_TOKEN : ${{ secrets.PERSONAL_ACCESS_TOKEN_UNCOMMONCENSE }}
         with:
           path-to-document: https://github.com/osohq/cla/blob/main/individual.md
           remote-organization-name: osohq
