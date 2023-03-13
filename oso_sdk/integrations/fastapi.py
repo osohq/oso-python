@@ -120,16 +120,6 @@ class _FastApiIntegration(OsoSdk):
 
 
 class FastApiIntegration(IntegrationConfig):
-    """TODO
-    the callable you pass to `identify_user_from_request` is a blah
-
-    Args:
-        IntegrationConfig (_type_): _description_
-
-    Returns:
-        _type_: _description_
-    """
-
     @staticmethod
     def init(
         api_key: str, optin: bool, exception: Optional[Exception]

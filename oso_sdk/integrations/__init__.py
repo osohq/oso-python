@@ -34,18 +34,26 @@ class Integration:
         self._custom_exception: Optional[Exception] = exception
 
     def identify_user_from_request(self, f):
-        """TODO
+        """Override the default function used to identify the "actor" to authorize.
+
+        The type signature of the provided function is Integration specific.
 
         Args:
-            f (Callable[..., str]): _description_
+            f (_type_): The function that will be used to identify which user
+                is being authorized for a given request. This will be called once
+                for every authorized request.
         """
         self._identify_user_from_request = f
 
     def identify_action_from_method(self, f):
-        """TODO
+        """Override the default function used to identify the "action" to authorize.
+
+        The type signature of the user provided function is Integration specific.
 
         Args:
-            f (Callable[..., str]): _description_
+            f (_type_): The function that will be used to identify what action
+                is being authorized for a given request. This will be called once
+                for every authorized request.
         """
         self._identify_action_from_method = f
 
@@ -58,18 +66,15 @@ class Integration:
         action: Optional[str] = None,
         resource_type: Optional[str] = None,
     ):
-        """TODO
+        """Add or modify enforcement to an endpoint.
 
         Args:
-            resource_id (str): _description_
-            action (str | None, optional): _description_. Defaults to None.
-            resource_type (str | None, optional): _description_. Defaults to None.
+            resource_id (str): The resource id to authorize. Usually a route parameter.
+            action (Optional[str], optional): Hardcode an action for this route. Defaults to None.
+            resource_type (Optional[str], optional): Hardcode a resource_type for this route. Defaults to None.
 
         Raises:
-            ValueError: _description_
-
-        Returns:
-            _type_: _description_
+            ValueError: If `resource_id` is an empty string
         """
         if len(resource_id) == 0:
             raise ValueError("`resource_id` cannot be an empty string")
