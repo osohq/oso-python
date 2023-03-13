@@ -26,7 +26,6 @@ jobs:
       - name: Build distribution
         run: python -m build
       - name: publish wheel
-        working-directory: clients/python
         run: |
           pip install twine
           twine upload dist/* --non-interactive
