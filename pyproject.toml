@@ -1,0 +1,86 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "oso-sdk"
+description = "Python integrations for Oso Cloud"
+readme = "README.md"
+requires-python = ">=3.8"
+authors = [
+    { name = "Oso Security", email = "support@osohq.com" },
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: Apache Software License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = ["oso-cloud>=1.0.0"]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://www.osohq.com/"
+Documentation = "https://www.osohq.com/docs"
+
+[project.optional-dependencies]
+test = [
+    "black==23.1.0",
+    "coverage[toml]>=7.2.1",
+    "fastapi==0.79.0; python_version=='3.8'",
+    "fastapi>=0.79.0; python_version>'3.8'",
+    "flask[async]==2.0.0; python_version=='3.8'",
+    "flask[async]>=2.0.0; python_version>'3.8'",
+    "httpx==0.23.3",
+    "isort==5.12.0",
+    "mypy==1.1.1",
+    "pytest==7.2.2",
+    "ruff==0.0.254",
+    "starlette==0.19.1; python_version=='3.8'",
+    "starlette>=0.19.1; python_version>'3.8'",
+    "werkzeug==2.0.3; python_version=='3.8'",
+    "werkzeug>=2.0.3; python_version>='3.8'",
+]
+example = ["uvicorn[standard]>=0.21.0"]
+fastapi = ["fastapi>=0.79.0", "starlette>=0.19.1"]
+flask = ["flask>=2.0.0"]
+
+[tool.hatch.version]
+path = "oso_sdk/__init__.py"
+
+[tool.isort]
+profile = "black"
+known_third_party = ["oso_cloud", "oso_sdk", "fastapi", "flask", "starlette"]
+
+[tool.mypy]
+strict = false
+
+[tool.pytest.ini_options]
+addopts = ["--strict-config", "--strict-markers"]
+xfail_strict = true
+junit_family = "xunit2"
+
+[tool.coverage.run]
+parallel = true
+source = ["oso_sdk"]
+
+[tool.ruff]
+select = [
+    "E", # pycodestyle errors
+    "W", # pycodestyle warnings
+    "F", # pyflakes
+    "C", # flake8-comprehensions
+    "B", # flake8-bugbear
+]
+ignore = [
+    "E501", # line too long, handled by black
+    "B008", # do not perform function calls in argument defaults
+    "C901", # too complex
+]
