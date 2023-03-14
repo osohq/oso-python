@@ -103,6 +103,17 @@ def action(_: str) -> str:
     return "read"
 ```
 
+## Usage
+
+The Oso SDK inherits all of the methods from `Oso`. For example, you may assign `User:alice` a [global `member` role](https://www.osohq.com/docs/guides/model-your-apps-authz#global-roles).
+
+```python
+oso = oso_sdk.global_oso()
+oso.tell({"name": "has_role", "args": [{"type": "User", "id": "alice"}, "member"]})
+```
+
+A full list of available methods is documented on our [Docs page](https://www.osohq.com/docs/reference/client-apis/python).
+
 ## Supported Versions
 
 - Flask: 2.0.0+
