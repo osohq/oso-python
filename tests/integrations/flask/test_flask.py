@@ -54,22 +54,7 @@ def test_parse_resource_id():
         oso._parse_resource_id("/org/<id>/repo/<repo_id>")
 
 
-@pytest.fixture
-def jwt_token_header(jwt_token):
-    return {"Authorization": f"Bearer {jwt_token}"}
-
-
-@pytest.fixture
-def jwt_payload_malformed_header(jwt_payload_malformed):
-    return {"Authorization": f"Bearer {jwt_payload_malformed}"}
-
-
-@pytest.fixture
-def jwt_payload_no_sub_header(jwt_payload_no_sub):
-    return {"Authorization": f"Bearer {jwt_payload_no_sub}"}
-
-
-def test_default(app_default, mock_oso_allowed, jwt_token_header, test_user):
+def test_default(app_default, mock_oso_allowed, test_user):
     app, _ = app_default
 
     @app.post("/org")
@@ -85,38 +70,38 @@ def test_default(app_default, mock_oso_allowed, jwt_token_header, test_user):
     resp = client.get("/")
     assert resp.status_code == 404
 
-    resp = client.post("/org", headers=jwt_token_header)
+    resp = client.post("/org")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="create", resource={"type": "PostOrg", "id": "_"}
     )
 
-    resp = client.get("/org/1", headers=jwt_token_header)
+    resp = client.get("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="view", resource={"type": "Org", "id": "_"}
     )
 
-    resp = client.put("/org/1", headers=jwt_token_header)
+    resp = client.put("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="update", resource={"type": "Org", "id": "_"}
     )
 
-    resp = client.patch("/org/1", headers=jwt_token_header)
+    resp = client.patch("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="update", resource={"type": "Org", "id": "_"}
     )
 
-    resp = client.delete("/org/1", headers=jwt_token_header)
+    resp = client.delete("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="delete", resource={"type": "Org", "id": "_"}
     )
 
 
-def test_enforce_override(app_default, mock_oso_allowed, jwt_token_header, test_user):
+def test_enforce_override(app_default, mock_oso_allowed, test_user):
     app, oso = app_default
 
     @app.post("/org")
@@ -130,38 +115,38 @@ def test_enforce_override(app_default, mock_oso_allowed, jwt_token_header, test_
         return {"status": "ok"}
 
     client = app.test_client()
-    resp = client.post("/org", headers=jwt_token_header)
+    resp = client.post("/org")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="bar", resource={"type": "Baz", "id": "foo"}
     )
 
-    resp = client.get("/org/1", headers=jwt_token_header)
+    resp = client.get("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="bar", resource={"type": "Baz", "id": "1"}
     )
 
-    resp = client.put("/org/1", headers=jwt_token_header)
+    resp = client.put("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="bar", resource={"type": "Baz", "id": "1"}
     )
 
-    resp = client.patch("/org/1", headers=jwt_token_header)
+    resp = client.patch("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="bar", resource={"type": "Baz", "id": "1"}
     )
 
-    resp = client.delete("/org/1", headers=jwt_token_header)
+    resp = client.delete("/org/1")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_with(
         actor=test_user, action="bar", resource={"type": "Baz", "id": "1"}
     )
 
 
-def test_optin(app_optin, mock_oso_allowed, jwt_token_header, test_user):
+def test_optin(app_optin, mock_oso_allowed, test_user):
     app, oso = app_optin
 
     @app.get("/org/<id>")
@@ -175,17 +160,17 @@ def test_optin(app_optin, mock_oso_allowed, jwt_token_header, test_user):
 
     client = app.test_client()
 
-    resp = client.get("/org/1", headers=jwt_token_header)
+    resp = client.get("/org/1")
     assert resp.json["status"] == "ok"
 
-    resp = client.get("/org/1/repo/2", headers=jwt_token_header)
+    resp = client.get("/org/1/repo/2")
     assert resp.json["status"] == "ok"
     mock_oso_allowed.assert_called_once_with(
         actor=test_user, action="view", resource={"type": "Repo", "id": "2"}
     )
 
 
-def test_denied(app_default, mock_oso_denied, jwt_token_header, test_user):
+def test_denied(app_default, mock_oso_denied, test_user):
     app, _ = app_default
 
     @app.get("/org/<id>")
@@ -194,7 +179,7 @@ def test_denied(app_default, mock_oso_denied, jwt_token_header, test_user):
 
     client = app.test_client()
 
-    resp = client.get("/org/1", headers=jwt_token_header)
+    resp = client.get("/org/1")
     assert resp.status_code == 404
     mock_oso_denied.assert_called_once_with(
         actor=test_user, action="view", resource={"type": "Org", "id": "_"}
@@ -202,7 +187,7 @@ def test_denied(app_default, mock_oso_denied, jwt_token_header, test_user):
 
 
 def test_custom_exception(
-    app_custom_exception, mock_oso_denied, jwt_token_header, test_user
+    app_custom_exception, mock_oso_denied, test_user
 ):
     app, _ = app_custom_exception
 
@@ -213,23 +198,10 @@ def test_custom_exception(
     client = app.test_client()
 
     with pytest.raises(Exception):
-        client.get("/org/1", headers=jwt_token_header)
+        client.get("/org/1")
         mock_oso_denied.assert_called_once_with(
             actor=test_user, action="view", resource={"type": "Org", "id": "_"}
         )
-
-
-def test_invalid_token(app_default, jwt_payload_no_sub_header):
-    app, _ = app_default
-
-    @app.get("/org/<id>")
-    def org(id: int):
-        return {"status": "ok"}
-
-    client = app.test_client()
-
-    resp = client.get("/org/1", headers=jwt_payload_no_sub_header)
-    assert resp.status_code == 404
 
 
 def test_custom_user_func_sync(app_default, mock_oso_allowed):
@@ -274,7 +246,7 @@ def test_custom_user_func_async(app_default, mock_oso_allowed):
 
 
 def test_custom_action_func_sync(
-    app_default, mock_oso_allowed, jwt_token_header, test_user
+    app_default, mock_oso_allowed, test_user
 ):
     app, oso = app_default
 
@@ -287,14 +259,14 @@ def test_custom_action_func_sync(
         return "bar"
 
     client = app.test_client()
-    client.get("/org/1", headers=jwt_token_header)
+    client.get("/org/1")
     mock_oso_allowed.assert_called_once_with(
         actor=test_user, action="bar", resource={"type": "Org", "id": "_"}
     )
 
 
 def test_custom_action_func_async(
-    app_default, mock_oso_allowed, jwt_token_header, test_user
+    app_default, mock_oso_allowed, test_user
 ):
     app, oso = app_default
 
@@ -308,7 +280,7 @@ def test_custom_action_func_async(
         return "bar"
 
     client = app.test_client()
-    client.get("/org/1", headers=jwt_token_header)
+    client.get("/org/1")
     mock_oso_allowed.assert_called_once_with(
         actor=test_user, action="bar", resource={"type": "Org", "id": "_"}
     )

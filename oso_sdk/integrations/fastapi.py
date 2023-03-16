@@ -7,7 +7,7 @@ from fastapi import HTTPException, Request
 from oso_sdk import IntegrationConfig, OsoSdk
 from starlette.concurrency import run_in_threadpool
 
-from ..constants import RESOURCE_ID_DEFAULT
+from ..constants import RESOURCE_ID_DEFAULT, USER_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
 from . import ResourceIdKind, to_resource_type, utils
 
@@ -98,8 +98,7 @@ class _FastApiIntegration(OsoSdk):
                 self._identify_user_from_request, {"request": request}
             )
 
-        authorization = request.headers.get("Authorization")
-        return utils.get_sub_from_jwt(authorization)
+        return USER_ID_DEFAULT
 
     async def _get_action_from_method(self, method: str) -> str:
         if self._identify_action_from_method:
