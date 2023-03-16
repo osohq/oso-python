@@ -6,7 +6,7 @@ from typing import Optional, Tuple
 from flask import Blueprint, abort, current_app, request
 from oso_sdk import IntegrationConfig, OsoSdk
 
-from ..constants import RESOURCE_ID_DEFAULT
+from ..constants import RESOURCE_ID_DEFAULT, USER_ID_DEFAULT
 from ..exceptions import OsoSdkInternalError
 from . import ResourceIdKind, to_resource_type, utils
 
@@ -83,8 +83,7 @@ class _FlaskIntegration(OsoSdk):
         if self._identify_user_from_request:
             return current_app.ensure_sync(self._identify_user_from_request)()
 
-        authorization = request.headers.get("Authorization")
-        return utils.get_sub_from_jwt(authorization)
+        return USER_ID_DEFAULT
 
     def _get_action_from_method(self) -> str:
         if self._identify_action_from_method:

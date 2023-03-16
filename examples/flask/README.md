@@ -38,9 +38,10 @@ oso = global_oso()
 ## Integration Options
 
 By default, all routes are enforced by Oso Cloud.
-- Actor ID is the `subject` field of a JWT token. If you do not use JWT, you may [override the user identification](#user-identification).
-- Action is inferred from the HTTP method. If you have a different set of permissions from the defaults, you may [override the action identification](#action-identification).
-- HTTP 404 is returned on authorization failure.
+- Actor ID is a hardcoded value of `_`. You may override the Actor ID using [@oso.identify_user_from_request](#user-identification).
+- Action is inferred from the HTTP method. If you have a different set of permissions from the defaults, you may override the the mapped value using [@oso.identify_action_from_method](#action-identification).
+- Resource ID is a hardcoded value of `_`. You may override the Resource ID using [`@oso.enforce`](#route-overrides).
+- HTTP 404 is returned on authorization failure. You may specify a custom `Exception` on the `oso_sdk.init` call.
 
 ### Initialization
 

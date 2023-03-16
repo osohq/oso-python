@@ -40,7 +40,7 @@ def jwt_token():
 
 @pytest.fixture
 def test_user():
-    return {"type": "User", "id": "1234567890"}
+    return {"type": "User", "id": "_"}
 
 
 @pytest.fixture
