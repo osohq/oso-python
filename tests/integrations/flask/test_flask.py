@@ -186,9 +186,7 @@ def test_denied(app_default, mock_oso_denied, test_user):
     )
 
 
-def test_custom_exception(
-    app_custom_exception, mock_oso_denied, test_user
-):
+def test_custom_exception(app_custom_exception, mock_oso_denied, test_user):
     app, _ = app_custom_exception
 
     @app.get("/org/<id>")
@@ -245,9 +243,7 @@ def test_custom_user_func_async(app_default, mock_oso_allowed):
     )
 
 
-def test_custom_action_func_sync(
-    app_default, mock_oso_allowed, test_user
-):
+def test_custom_action_func_sync(app_default, mock_oso_allowed, test_user):
     app, oso = app_default
 
     @app.get("/org/<id>")
@@ -265,9 +261,7 @@ def test_custom_action_func_sync(
     )
 
 
-def test_custom_action_func_async(
-    app_default, mock_oso_allowed, test_user
-):
+def test_custom_action_func_async(app_default, mock_oso_allowed, test_user):
     app, oso = app_default
 
     @app.get("/org/<id>")
