@@ -1,8 +1,9 @@
-from typing import Any, Optional
+from typing import Any, List, Optional, Tuple
 
-import oso_cloud  # type: ignore
+import oso_cloud
 
 from .constants import OSO_URL
+from .types.conversion import to_fact
 from .integrations import Integration
 
 __version__ = "0.3.0"
@@ -29,6 +30,14 @@ class OsoSdk(oso_cloud.Oso, Integration):
         instance isn't a callable.
         """
         raise NotImplementedError  # pragma: no cover
+
+    def insert_fact(self, predicate: str, args: Tuple[Any, ...]):
+        fact = to_fact(predicate, args)
+        self.tell(fact)
+
+    def insert_facts(self, facts: List[Tuple[str, Tuple[Any, ...]]]):
+        _facts = [to_fact(predicate, args) for (predicate, args) in facts]
+        self.bulk_tell(_facts)
 
 
 class IntegrationConfig:
