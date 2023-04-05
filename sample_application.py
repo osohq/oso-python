@@ -140,8 +140,8 @@ async def get_repository(id: str):
     permissions on the Repository in question.
 
     A repository belongs to an Organization, given the `repository_container`
-    relation. Our policy declares that some roles on an Organization, imply some
-    permissions on a Repository:
+    relation. Our policy declares that some roles on an Organization, give some
+    roles on a Repository:
 
         "viewer" if "viewer" on "repository_container";
         "owner" if "owner" on "repository_container";
