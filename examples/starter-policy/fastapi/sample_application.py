@@ -100,7 +100,7 @@ async def get_organization(id: str):
     This will also allow access, and is implied by the "viewer" role.
     """
 
-    return {"org": id, "data": "TODO"}
+    return {"org": id, "data": "..."}
 
 
 @app.post("/org/{id}")
@@ -130,7 +130,7 @@ async def post_organization(id: str):
     return {"org": id, "warning": "editing unimplemented"}
 
 
-@app.post("/repo/{id}")
+@app.get("/repo/{id}")
 @oso.enforce("{id}", "view", "Repository")
 async def get_repository(id: str):
     """
@@ -141,10 +141,10 @@ async def get_repository(id: str):
 
     A repository belongs to an Organization, given the `repository_container`
     relation. Our policy declares that some roles on an Organization, give some
-    roles on a Repository:
+    permissions on a Repository:
 
-        "viewer" if "viewer" on "repository_container";
-        "owner" if "owner" on "repository_container";
+        "view" if "viewer" on "repository_container";
+        "edit" if "owner" on "repository_container";
 
     To construct the relation between the an instance of a Repository and an
     Organization, we add a fact to Oso Cloud:
@@ -156,7 +156,7 @@ async def get_repository(id: str):
 
         has_role(User:anonymous, "viewer", Organization:acme)
 
-    Because the "viewer" role on Organization:acme gives the "viewer" role on
+    Because the "viewer" role on Organization:acme gives the "view" permission on
     Repository:code (given the "repository_container" relation), this will allow
     access.
 
@@ -171,6 +171,45 @@ async def get_repository(id: str):
         has_permission(User:anonymous, "view", Repository:code)
 
     Each of the approaches described above will allow "anonymous" to GET
+    `/repo/code`.
+    """
+
+    return {"repo": id, "data": "..."}
+
+
+@app.post("/repo/{id}")
+@oso.enforce("{id}", "view", "Repository")
+async def post_repository(id: str):
+    """
+    This is the "edit" endpoint for a Repository, keyed on `id`.
+
+    When this endpoint is accessed, we check to see if the Actor has "edit"
+    permissions on the Repository in question.
+
+    Assuming that this relation exists as a fact in Oso Cloud:
+
+        has_relation(Repository:code, "repository_container", Organization:acme)
+
+    ...if you'd like to give the "admin" user access to POST `/repo/code`,
+    you can add this fact to Oso Cloud:
+
+        has_role(User:admin, "editor", Organization:acme)
+
+    Because the "editor" role on Organization:acme gives the "viewer" permission
+    on Repository:code (given the "repository_container" relation), this will
+    allow access.
+
+    Alternatively, you can give the "editor" role directly on this resource:
+
+        has_role(User:admin, "editor", Repository:acme)
+
+    Because the "editor" role on Repository:code gives the "edit" permission,
+    this will allow access. You can also add a fact giving this permission
+    directly:
+
+        has_permission(User:anonymous, "edit", Repository:code)
+
+    Each of the approaches described above will allow "admin" to POST
     `/repo/code`.
     """
 

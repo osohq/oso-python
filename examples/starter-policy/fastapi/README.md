@@ -122,33 +122,109 @@ curl -H 'Authorization: secret_password' localhost:8000/org/acme
 
 ## Constructing a Relation with Facts
 
-TODO 
+The resource block definition for `Repository` contains a relation, `repository_container`:
+
+```
+resource Repository {
+  # ...
+  relations = { repository_container: Organization };
+  # ...
+}
+```
+
+This allows **associating a Repository with an Organization**. We declare this with a fact, which references:
+- a specific instance of a `Repository`, and
+- a specific instance of an `Organization`.
+
+For example, if we wanted to declare a relationship on `Repository:code`, and `Organization:acme`, we could add the following fact to Oso Cloud:
 
 - `has_relation(Repository:code, "repository_container", Organization:acme)`
 
+This is relevant for a few permissions, defined on the `Repository` resource:
 ```
-"viewer" if "viewer" on "repository_container";
-"owner" if "owner" on "repository_container";
+resource Repository {
+  # ...
+  "view" if "viewer" on "repository_container";
+  "edit" if "owner" on "repository_container";
+  # ...
+}
 ```
+
+Assuming we declared the relationship between `Repository:code` and `Organization:acme`, this means:
+- if an actor has the `viewer` role on `Organization:acme`, they will have the `view` permission on `Repository:code`
+- if an actor has the `owner` role on `Organization:acme`, they will have the `edit` permission on `Repository:code`
+
+This gives us some flexbility - we can allow access with a few different approaches.
 
 ## `GET /org/code` as `User:anonymous`
 
-TODO 
+The `get_repository` route is enforced:
+
+```python
+@app.get("/repo/{id}")
+@oso.enforce("{id}", "view", "Repository")
+```
+
+### Allowing `view` through `Repository:code`
+
+To access this route, you'll need to provide the `view` permission. This can be accomplished by adding a fact, which gives `User:anonymous` the `view` permission on the Repository:
+- `has_permission(User:anonymous, "view", Repository:code)`
+
+This can also be accomplished by giving `User:anonymous` the `viewer` role on the Repository:
+- `has_role(User:anonymous, "viewer", Repository:code)`
 
 ### Allowing `view` through `Organization:acme`
 
-TODO 
+Alternatively, we can allow access by assigning roles on `Organization:acme`:
+- `has_role(User:anonymous, "viewer", Organization:acme)`
 
-### Allowing `view` through `Repository:acme`
+Even though this fact does not reference `Repository:code`, assuming the relation mentioned earlier is defined (`has_relation(Repository:code, "repository_container", Organization:acme)`), our Polar policy declares that the `view` permission is implied:
 
-TODO
+> if an actor has the `viewer` role on `Organization:acme`, they will have the `view` permission on `Repository:code`
+
+Now, whichever approach you chose, the following request should succeed:
+
+```bash
+curl localhost:8000/org/acme
+```
 
 ## `POST /org/code` as `User:admin`
 
-### Allowing `edit` through `Organization:acme`
+The `post_repository` route is enforced:
 
-TODO
+```python
+@app.get("/repo/{id}")
+@oso.enforce("{id}", "edit", "Repository")
+```
 
 ### Allowing `edit` through `Repository:code`
 
-TODO
+To access this route, you'll need to provide the `edit` permission. As before, we can add a fact to accomplish this directly:
+- `has_permission(User:anonymous, "edit", Repository:code)`
+
+Or, we can assign the `editor` role:
+- `has_role(User:anonymous, "editor", Organization:acme)`
+
+### Allowing `edit` through `Organization:acme`
+
+Alternatively, we can allow access by assigning roles on `Organization:acme`:
+- `has_role(User:anonymous, "editor", Organization:acme)`
+
+Again, we're not referencing `Repository:code`, but assuming the relation mentioned earlier is defined (`has_relation(Repository:code, "repository_container", Organization:acme)`), the Polar policy declares that the `edit` permission is implied:
+
+> if an actor has the `owner` role on `Organization:acme`, they will have the `edit` permission on `Repository:code`
+
+Whichever approach you chose, the following request should succeed:
+
+```bash
+curl localhost:8000/org/acme
+```
+
+# Additional Resources
+
+Thanks for taking the time to read through this guide! If you're looking for more information on Oso Cloud and this SDK, check out some of the following resources:
+
+- [Python Oso SDK](https://github.com/osohq/oso-python)
+- [Oso Cloud Documentation](https://www.osohq.com/docs)
+
+If you'd like to get in touch, or need some extra help, [check out our Slack!](https://join-slack.osohq.com/?utm_source=starter-policy-sample-application)
