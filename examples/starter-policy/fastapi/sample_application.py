@@ -178,7 +178,7 @@ async def get_repository(id: str):
 
 
 @app.post("/repo/{id}")
-@oso.enforce("{id}", "view", "Repository")
+@oso.enforce("{id}", "edit", "Repository")
 async def post_repository(id: str):
     """
     This is the "edit" endpoint for a Repository, keyed on `id`.
