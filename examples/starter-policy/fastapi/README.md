@@ -202,13 +202,13 @@ The `post_repository` route is enforced:
 To access this route, you'll need to provide the `edit` permission. As before, we can add a fact to accomplish this directly:
 - `has_permission(User:anonymous, "edit", Repository:code)`
 
-Or, we can assign the `editor` role:
-- `has_role(User:anonymous, "editor", Organization:acme)`
+Or, we can assign the `owner` role, which gives the `edit` permission:
+- `has_role(User:anonymous, "owner", Organization:acme)`
 
 ### Allowing `edit` through `Organization:acme`
 
 Alternatively, we can allow access by assigning roles on `Organization:acme`:
-- `has_role(User:anonymous, "editor", Organization:acme)`
+- `has_role(User:anonymous, "owner", Organization:acme)`
 
 Again, we're not referencing `Repository:code`, but assuming the relation mentioned earlier is defined (`has_relation(Repository:code, "repository_container", Organization:acme)`), the Polar policy declares that the `edit` permission is implied:
 
