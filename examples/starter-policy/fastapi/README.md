@@ -17,14 +17,14 @@ resource Organization {
 resource Repository {
   roles = ["viewer", "owner"];
   permissions = ["view", "edit"];
-  relations = { repository_container: Organization };
+  relations = { repository_tenant: Organization };
 
   "view" if "viewer";
   "view" if "owner";
   "edit" if "owner";
-  "view" if "viewer" on "repository_container";
-  "view" if "owner" on "repository_container";
-  "edit" if "owner" on "repository_container";
+  "view" if "viewer" on "repository_tenant";
+  "view" if "owner" on "repository_tenant";
+  "edit" if "owner" on "repository_tenant";
 }
 ```
 
@@ -52,21 +52,15 @@ uvicorn sample_application:app
 
 To authenticate requests, Oso needs to know which Actor is performing an action.
 
-To keep the implementation of this sample application simple, there are two users:
-- `anonymous`
-- `admin`
+To keep the implementation of this sample application simple, all requests assume the actor is `User{"anonymous"}`. This is configured with the `identify_user_from_request` decorator:
 
-## `User:admin`
-
-To authenticate as `User:admin`, set the `Authorization` header's value to `secret_password`:
-
-```bash
-curl -H 'Authorization: secret_password' localhost:8000/org/acme
+``` python
+@oso.identify_user_from_request
+async def user(request: Request) -> str:
+  return "anonymous"
 ```
 
-## `User:anonymous`
-
-All other requests are authenticated as `User:anonymous`:
+So, this request is authenticated as the `User{"anonymous"}` actor:
 
 ```bash
 curl localhost:8000/org/acme
