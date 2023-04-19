@@ -7,6 +7,8 @@ The Oso SDK provides web framework middleware for [`oso-cloud`](https://pypi.org
 
 ## Getting Started
 
+>If you are looking for the sample application, navigate to [examples/starter-policy/fastapi](examples/starter-policy/fastapi/).
+
 ### Install
 
 ```bash
