@@ -53,11 +53,6 @@ async def get_organization(id: str):
         has_role(User{"anonymous"}, "viewer", Organization{"acme"})
 
     Because the "viewer" role gives "view" permission, this will allow access.
-    You can also add a fact giving this permission directly:
-
-        has_permission(User{"anonymous"}, "view", Organization{"acme"})
-
-    This will also allow access, and is implied by the "viewer" role.
     """
 
     return {"org": id, "data": "..."}
@@ -78,11 +73,6 @@ async def post_organization(id: str):
         has_role(User{"anonymous"}, "owner", Organization{"acme"})
 
     Because the "owner" role gives "edit" permission, this will allow access.
-    You can also add a fact giving this permission directly:
-
-        has_permission(User{"anonymous"}, "edit", Organization{"acme"})
-
-    This will also allow access, and is implied by the "owner" role.
     """
 
     # implementing this endpoint is left as an exercise for the reader
@@ -119,19 +109,6 @@ async def get_repository(id: str):
     Because the "viewer" role on Organization{"acme"} gives the "view" permission on
     Repository{"code"} (given the "repository_container" relation), this will allow
     access.
-
-    Alternatively, you can give the "viewer" role directly on this resource:
-
-        has_role(User{"anonymous"}, "viewer", Repository{"acme"})
-
-    Because the "viewer" role on Repository{"code"} gives the "edit" permission,
-    this will allow access. You can also add a fact giving this permission
-    directly:
-
-        has_permission(User{"anonymous"}, "view", Repository{"code"})
-
-    Each of the approaches described above will allow "anonymous" to GET
-    `/repo/code`.
     """
 
     return {"repo": id, "data": "..."}
@@ -158,19 +135,6 @@ async def post_repository(id: str):
     Because the "editor" role on Organization{"acme"} gives the "viewer" permission
     on Repository{"code"} (given the "repository_container" relation), this will
     allow access.
-
-    Alternatively, you can give the "editor" role directly on this resource:
-
-        has_role(User{"anonymous"}, "editor", Repository{"acme"})
-
-    Because the "editor" role on Repository{"code"} gives the "edit" permission,
-    this will allow access. You can also add a fact giving this permission
-    directly:
-
-        has_permission(User{"anonymous"}, "edit", Repository{"code"})
-
-    Each of the approaches described above will allow "anonymous" to POST
-    `/repo/code`.
     """
 
     return {"repo": id, "warning": "editing unimplemented"}

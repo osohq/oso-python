@@ -170,24 +170,16 @@ The `get_repository` route is enforced:
 @oso.enforce("{id}", "view", "Repository")
 ```
 
-### Allowing `view` through `Repository{"code"}`
+To access this route, you'll need to provide the `view` permission.
 
-To access this route, you'll need to provide the `view` permission. This can be accomplished by adding a fact, which gives `User{"anonymous"}` the `view` permission on the Repository:
-- `has_permission(User{"anonymous"}, "view", Repository{"code"})`
-
-This can also be accomplished by giving `User{"anonymous"}` the `viewer` role on the Repository:
-- `has_role(User{"anonymous"}, "viewer", Repository{"code"})`
-
-### Allowing `view` through `Organization{"acme"}`
-
-Alternatively, we can allow access by assigning roles on `Organization{"acme"}`:
+We can allow access by assigning the `viewer` role to `User{"anonymous"}` on `Organization{"acme"}`:
 - `has_role(User{"anonymous"}, "viewer", Organization{"acme"})`
 
 Even though this fact does not reference `Repository{"code"}`, assuming the relation mentioned earlier is defined (`has_relation(Repository{"code"}, "repository_tenant", Organization{"acme"})`), our Polar policy declares that the `view` permission is implied:
 
 > if an actor has the `viewer` role on `Organization{"acme"}`, they will have the `view` permission on `Repository{"code"}`
 
-Now, whichever approach you chose, the following request should succeed:
+After adding these facts, the following request should succeed:
 
 ```bash
 curl localhost:8000/repo/code
@@ -202,24 +194,16 @@ The `post_repository` route is enforced:
 @oso.enforce("{id}", "edit", "Repository")
 ```
 
-### Allowing `edit` through `Repository{"code"}`
+To access this route, you'll need to provide the `edit` permission.
 
-To access this route, you'll need to provide the `edit` permission. As before, we can add a fact to accomplish this directly:
-- `has_permission(User{"anonymous"}, "edit", Repository{"code"})`
-
-Or, we can assign the `owner` role, which gives the `edit` permission:
-- `has_role(User{"anonymous"}, "owner", Organization{"acme"})`
-
-### Allowing `edit` through `Organization{"acme"}`
-
-Alternatively, we can allow access by assigning roles on `Organization{"acme"}`:
+We can allow access by assigning the `owner` role to `User{"anonymous"}` on `Organization{"acme"}`:
 - `has_role(User{"anonymous"}, "owner", Organization{"acme"})`
 
 Again, we're not referencing `Repository{"code"}`, but assuming the relation mentioned earlier is defined (`has_relation(Repository{"code"}, "repository_tenant", Organization{"acme"})`), the Polar policy declares that the `edit` permission is implied:
 
 > if an actor has the `owner` role on `Organization{"acme"}`, they will have the `edit` permission on `Repository{"code"}`
 
-Whichever approach you chose, the following request should succeed:
+After adding these facts, the following request should succeed:
 
 ```bash
 curl -X POST localhost:8000/repo/code
