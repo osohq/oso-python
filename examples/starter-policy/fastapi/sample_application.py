@@ -1,7 +1,6 @@
 import oso_sdk
 import os
 from fastapi import Depends, FastAPI, Request
-from fastapi.exceptions import HTTPException
 from oso_sdk.integrations.fastapi import FastApiIntegration
 
 # remember to update this before running the server!
