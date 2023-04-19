@@ -1,0 +1,22 @@
+{
+    "name": "fastapi-sample-app",
+    "image": "mcr.microsoft.com/devcontainers/python:0-3.11-bullseye",
+    "customizations": {
+        "codespaces": {
+            "openFiles": [
+                "examples/starter-policy/fastapi/sample_application.py",
+                "examples/starter-policy/fastapi/README.md"
+            ]
+        },
+        "vscode": {
+            "extensions": [
+                "osohq.oso"
+            ],
+            "settings": {
+                "terminal.integrated.cwd": "examples/starter-policy/fastapi",
+                "oso.polarLanguageServer.validations": "cloud"
+            }
+        }
+    },
+    "postCreateCommand": "pip3 install --user -r examples/starter-policy/fastapi/requirements.txt"
+}

@@ -1,0 +1,2 @@
+oso-sdk[fastapi]>=0.3.0
+uvicorn[standard]>=0.21.0
