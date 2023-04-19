@@ -3,11 +3,8 @@ import os
 from fastapi import Depends, FastAPI, Request
 from fastapi.exceptions import HTTPException
 from oso_sdk.integrations.fastapi import FastApiIntegration
-import logging
 
-logger = logging.getLogger(__name__)
-
-
+# remember to update this before running the server!
 API_KEY = "<please provide your api key here>"
 
 oso = oso_sdk.init(
