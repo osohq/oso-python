@@ -40,11 +40,15 @@ Install `uvicorn` from PyPI to run the webserver:
 pip install --upgrade 'uvicorn[standard]`
 ```
 
-Grab an API key from Oso Cloud, setting the `OSO_AUTH` environment variable.
+Grab an API key from your Oso Cloud environment, and update the source code with your key:
+
+``` python
+# remember to update this before running the server!
+API_KEY = "<please provide your api key here>"
+```
 
 Now you can run the webserver with `uvicorn`:
 ```bash
-export OSO_AUTH="YOUR_API_KEY"
 uvicorn sample_application:app
 ```
 

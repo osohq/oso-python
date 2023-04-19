@@ -8,29 +8,10 @@ import logging
 logger = logging.getLogger(__name__)
 
 
-class ApiKeyNotFound(Exception):
-    """
-    Unable to start application, could not retrieve Oso Cloud API key.
-    """
-
-    pass
-
-
-def api_key() -> str:
-    """
-    Retrieve API key, checking `OSO_AUTH` environment variable.
-
-    Raise an exception if no value is set.
-    """
-    api_key = os.environ.get("OSO_AUTH")
-    if api_key is None:
-        raise ApiKeyNotFound
-    else:
-        return api_key
-
+API_KEY = "<please provide your api key here>"
 
 oso = oso_sdk.init(
-    api_key(),
+    API_KEY,
     FastApiIntegration(),
     # create a local instance of the Oso SDK
     shared=False,
