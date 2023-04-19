@@ -1,5 +1,4 @@
 import oso_sdk
-import os
 from fastapi import Depends, FastAPI, Request
 from oso_sdk.integrations.fastapi import FastApiIntegration
 
