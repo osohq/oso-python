@@ -2,7 +2,7 @@
 
 This application assumes the following Polar policy is active:
 
-```ruby
+```polar
 actor User {}
 
 resource Organization {
