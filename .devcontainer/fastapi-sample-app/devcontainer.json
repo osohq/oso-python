@@ -10,7 +10,8 @@
         },
         "vscode": {
             "extensions": [
-                "osohq.oso"
+                "osohq.oso",
+                "ms-python.python"
             ],
             "settings": {
                 "terminal.integrated.cwd": "examples/starter-policy/fastapi",
