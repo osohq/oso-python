@@ -5,14 +5,19 @@ import oso_cloud  # type: ignore
 from .constants import OSO_URL
 from .integrations import Integration
 
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 
 _shared = None
 
 
 class OsoSdk(oso_cloud.Oso, Integration):
     def __init__(self, api_key: str, optin: bool, exception: Optional[Exception]):
-        oso_cloud.Oso.__init__(self, OSO_URL, api_key)
+        user_agent = (
+            f"{OsoSdk.__name__}/{__version__}"
+            if self.__class__ == OsoSdk
+            else f"{OsoSdk.__name__}{self.__class__.__name__}/{__version__}"
+        )
+        oso_cloud.Oso.__init__(self, OSO_URL, api_key, user_agent)
         Integration.__init__(self, optin, exception)
 
     """A handle to Oso Cloud.
