@@ -48,6 +48,13 @@ class IntegrationConfig:
         raise NotImplementedError  # pragma: no cover
 
 
+class BaseIntegration(IntegrationConfig):
+    @staticmethod
+    def init(api_key: str, optin: bool, exception: Optional[Exception]) -> OsoSdk:
+        rv = OsoSdk(api_key, optin, exception)
+        return rv
+
+
 def init(
     api_key: str,
     integration: IntegrationConfig,
