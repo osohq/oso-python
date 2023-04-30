@@ -5,7 +5,7 @@ import oso_cloud  # type: ignore
 from .constants import OSO_URL
 from .integrations import Integration
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 _shared = None
 
@@ -46,6 +46,13 @@ class IntegrationConfig:
     @staticmethod
     def init(api_key: str, optin: bool, exception: Optional[Exception]) -> OsoSdk:
         raise NotImplementedError  # pragma: no cover
+
+
+class BaseIntegration(IntegrationConfig):
+    @staticmethod
+    def init(api_key: str, optin: bool, exception: Optional[Exception]) -> OsoSdk:
+        rv = OsoSdk(api_key, optin, exception)
+        return rv
 
 
 def init(
