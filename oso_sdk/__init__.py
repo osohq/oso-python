@@ -5,7 +5,7 @@ import oso_cloud  # type: ignore
 from .constants import OSO_URL
 from .integrations import Integration
 
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 
 _shared = None
 
